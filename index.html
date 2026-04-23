@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PortGen — Gerador de Portfólio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header class="tool-header">
+  <a id="logoLink" class="logo-link" href="#" title="Voltar ao início">
+    <span class="logo-text">Port<span>Gen</span></span>
+  </a>
+  <div class="header-right">
+    <div class="tool-lang-dropdown" id="toolLangDropdown">
+      <button class="tool-lang-trigger" id="toolLangTrigger" onclick="toggleLangDropdown(event)">
+        <span id="toolLangFlag">🇧🇷</span>
+        <span id="toolLangCode">PT</span>
+        <svg class="lang-chevron" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="tool-lang-menu" id="toolLangMenu">
+        <button class="tool-lang-opt active" data-lang="pt" data-flag="🇧🇷" onclick="setToolLang(this)">🇧🇷 Português</button>
+        <button class="tool-lang-opt" data-lang="en" data-flag="🇺🇸" onclick="setToolLang(this)">🇺🇸 English</button>
+        <button class="tool-lang-opt" data-lang="es" data-flag="🇪🇸" onclick="setToolLang(this)">🇪🇸 Español</button>
+        <button class="tool-lang-opt" data-lang="fr" data-flag="🇫🇷" onclick="setToolLang(this)">🇫🇷 Français</button>
+      </div>
+    </div>
+    <div id="stepIndicatorWrap" style="display:none">
+      <div class="step-indicator" id="stepIndicator"></div>
+    </div>
+    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleToolTheme()" title="Alternar tema">☀️</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     LANDING PAGE
+══════════════════════════════════════════ -->
+<div id="landingPage" class="landing-page">
+
+  <!-- Hero -->
+  <section class="hero-landing">
+    <div class="hero-badge">Ferramenta gratuita · 100% no navegador</div>
+    <h1>Crie seu portfólio<br>profissional em <em>minutos</em></h1>
+    <p class="hero-desc">
+      O <strong>PortGen</strong> guia você por um formulário inteligente e gera um site de portfólio completo, incluindo design moderno, paleta de cores personalizada, currículo pronto para imprimir e suporte a múltiplos idiomas. Sem código. Sem cadastro.
+    </p>
+    <div class="hero-cta-group">
+      <button class="cta-primary" onclick="showTool()">
+        ✨ Criar meu portfólio
+      </button>
+      <button class="cta-secondary" onclick="openTutorial()">
+        📖 Como publicar meu portfólio
+      </button>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎨</div>
+      <h3>Design personalizado</h3>
+      <p>Escolha sua paleta de cores com um seletor de harmonia cromática e veja o resultado em tempo real.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <h3>Multilíngue</h3>
+      <p>Gere seu portfólio em Português, Inglês, Espanhol e Francês — tudo em um único arquivo HTML.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <h3>Currículo incluso</h3>
+      <p>Além do portfólio, o PortGen gera um currículo limpo e otimizado para ATS, pronto para PDF.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Privacidade total</h3>
+      <p>Tudo acontece no seu navegador. Seus dados nunca saem do seu dispositivo.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>Responsivo</h3>
+      <p>O portfólio gerado funciona em qualquer tela — desktop, tablet ou celular.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Sem código</h3>
+      <p>Basta preencher o formulário. O PortGen cuida de todo o HTML, CSS e JavaScript por você.</p>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="how-section">
+    <h2>Como funciona</h2>
+    <p class="section-sub">Em apenas 4 passos você tem um portfólio pronto para publicar</p>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h4>Configure</h4>
+        <p>Escolha o layout, tema, idiomas e paleta de cores do seu portfólio.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h4>Preencha</h4>
+        <p>Adicione suas experiências, projetos, habilidades e certificados.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h4>Gere</h4>
+        <p>Clique em gerar e seu portfólio abre em uma nova aba, pronto para uso.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <h4>Publique</h4>
+        <p>Salve o arquivo HTML e hospede gratuitamente no GitHub Pages ou Vercel.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /landing-page -->
+
+<!-- ══════════════════════════════════════════
+     WIZARD (TOOL VIEW)
+══════════════════════════════════════════ -->
+<div id="toolView" class="tool-view">
+<main class="main">
+
+  <!-- ═══ STEP 1: Configurações gerais ═══ -->
+  <div class="step active" data-step="1">
+    <h2 class="step-title">Configure seu portfólio</h2>
+    <p class="step-subtitle">Escolha o formato, tema e os idiomas antes de preencher o conteúdo.</p>
+
+    <div class="field">
+      <label id="layoutLabel">Estrutura do portfólio</label>
+      <div class="big-choice">
+        <div class="big-choice-card selected" data-target="layoutType" data-value="landing" onclick="selectBigChoice(this)">
+          <div class="icon">📜</div>
+          <h3 id="layoutLandingTitle">Landing Page</h3>
+          <p id="layoutLandingDesc">Todas as seções em uma única página com navegação por âncora</p>
+        </div>
+        <div class="big-choice-card" data-target="layoutType" data-value="multipage" onclick="selectBigChoice(this)">
+          <div class="icon">📄</div>
+          <h3 id="layoutMultiTitle">Multi-página</h3>
+          <p id="layoutMultiDesc">Cada seção em uma página separada, navegação via header</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="themeLabel">Tema do portfólio gerado</label>
+      <div class="toggle-group">
+        <div class="toggle-btn selected" data-target="theme" data-value="dark" onclick="selectToggle(this)">🌙 Escuro</div>
+        <div class="toggle-btn"          data-target="theme" data-value="light" onclick="selectToggle(this)">☀️ Claro</div>
+        <div class="toggle-btn"          data-target="theme" data-value="both" onclick="selectToggle(this)">🌗 Ambos (com toggle)</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="langLabel">Idiomas do portfólio</label>
+      <p id="langHint" style="font-size:.82rem;color:var(--text-muted);margin-bottom:.75rem">Português é sempre incluído. Selecione os idiomas extras que desejar — o visitante poderá alternar entre eles.</p>
+      <div class="toggle-group">
+        <div class="toggle-btn selected" style="cursor:default;opacity:.7" title="Sempre incluído">🇧🇷 Português</div>
+        <div class="toggle-btn" data-value="en" onclick="toggleLang(this)">🇺🇸 English</div>
+        <div class="toggle-btn" data-value="es" onclick="toggleLang(this)">🇪🇸 Español</div>
+        <div class="toggle-btn" data-value="fr" onclick="toggleLang(this)">🇫🇷 Français</div>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="showLanding()">← Início</button>
+      <button class="btn btn-primary" onclick="goStep(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 2: Info pessoal ═══ -->
+  <div class="step" data-step="2">
+    <h2 class="step-title">Informações pessoais</h2>
+    <p class="step-subtitle">Seus dados de identificação. Aparecem no header e no currículo.</p>
+
+    <div class="row-2">
+      <div class="field">
+        <label>Nome completo <span class="req">*</span></label>
+        <input type="text" id="fullName" placeholder="Ex: Ana Clara Santos" />
+      </div>
+      <div class="field">
+        <label>Título profissional <span class="req">*</span></label>
+        <input type="text" id="jobTitle" placeholder="Ex: Desenvolvedora Front-End" />
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label>E-mail <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="Ex: ana@email.com" />
+      </div>
+      <div class="field">
+        <label>Telefone <span class="optional-badge">opcional</span></label>
+        <input type="tel" id="phone" placeholder="Ex: +55 11 99999-0000" />
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label>LinkedIn <span class="req">*</span></label>
+        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/seuperfil" />
+      </div>
+      <div class="field">
+        <label>GitHub <span class="optional-badge">opcional</span></label>
+        <input type="url" id="github" placeholder="https://github.com/seuusuario" />
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label>Localização <span class="req">*</span></label>
+        <div class="location-search-wrap">
+          <input type="text" id="locationInput" placeholder="Digite sua cidade ou região..." oninput="onLocationInput(event)" onblur="onLocationBlur()" autocomplete="off" />
+          <div class="location-spinner" id="locationSpinner"></div>
+          <div class="location-dropdown" id="locationDropdown"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Website / portfólio extra <span class="optional-badge">opcional</span></label>
+        <input type="url" id="website" placeholder="https://seusite.com" />
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(1)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 3: Foto + Sobre ═══ -->
+  <div class="step" data-step="3">
+    <h2 class="step-title">Sobre mim</h2>
+    <p class="step-subtitle">Uma apresentação sua — quem você é, o que faz e o que te motiva.</p>
+
+    <div class="field">
+      <label id="photoLabelEl">Foto de perfil <span class="optional-badge">opcional</span></label>
+      <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+        <img class="photo-preview" id="photoPreview" src="" alt="preview" />
+        <div class="icon" id="photoIcon">📷</div>
+        <p id="photoText">Clique para enviar uma foto (JPG, PNG)</p>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="aboutLabelEl">Texto "Sobre mim" <span class="req">*</span></label>
+      <textarea id="about" rows="5" placeholder="Escreva um parágrafo apresentando você, sua trajetória, interesses e diferenciais profissionais..."></textarea>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(2)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 4: Formação ═══ -->
+  <div class="step" data-step="4">
+    <h2 class="step-title">Formação acadêmica</h2>
+    <p class="step-subtitle">Adicione seus cursos, graduações e especializações.</p>
+    <div id="educationList"></div>
+    <button class="add-btn" onclick="addCard('educationList', educationCard)">+ Adicionar formação</button>
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(3)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(5)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 5: Experiência ═══ -->
+  <div class="step" data-step="5">
+    <h2 class="step-title">Experiência profissional</h2>
+    <p class="step-subtitle">Empregos, freelas, estágios — qualquer experiência relevante.</p>
+    <div id="expList"></div>
+    <button class="add-btn" onclick="addCard('expList', expCard)">+ Adicionar experiência</button>
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(4)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(6)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 6: Projetos ═══ -->
+  <div class="step" data-step="6">
+    <h2 class="step-title">Projetos</h2>
+    <p class="step-subtitle">Mostre o que você já construiu. Projetos pessoais e acadêmicos também contam!</p>
+    <div id="projectList"></div>
+    <button class="add-btn" onclick="addCard('projectList', projectCard)">+ Adicionar projeto</button>
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(5)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(7)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 7: Habilidades ═══ -->
+  <div class="step" data-step="7">
+    <h2 class="step-title">Habilidades</h2>
+    <p class="step-subtitle">Escreva uma habilidade e pressione <kbd>Enter</kbd> ou <kbd>,</kbd> para adicionar.</p>
+
+    <div class="field">
+      <label>Habilidades técnicas</label>
+      <div class="tag-input-wrap" onclick="document.getElementById('techTagsInput').focus()">
+        <div id="techTags" style="display:contents"></div>
+        <input class="tag-input-real" type="text" id="techTagsInput" placeholder="Ex: JavaScript, React, Python..." onkeydown="handleTag(event,'techTags')" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Soft skills <span class="optional-badge">opcional</span></label>
+      <div class="tag-input-wrap" onclick="document.getElementById('softTagsInput').focus()">
+        <div id="softTags" style="display:contents"></div>
+        <input class="tag-input-real" type="text" id="softTagsInput" placeholder="Ex: Liderança, Comunicação, Trabalho em equipe..." onkeydown="handleTag(event,'softTags')" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Idiomas <span class="optional-badge">opcional</span></label>
+      <div class="tag-input-wrap" onclick="document.getElementById('langTagsInput').focus()">
+        <div id="langTags" style="display:contents"></div>
+        <input class="tag-input-real" type="text" id="langTagsInput" placeholder="Ex: Português (nativo), Inglês (B2)..." onkeydown="handleTag(event,'langTags')" />
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(6)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(8)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 8: Certificados ═══ -->
+  <div class="step" data-step="8">
+    <h2 class="step-title">Certificados</h2>
+    <p class="step-subtitle">Cursos, certificações e conquistas que valem mencionar.</p>
+    <div id="certList"></div>
+    <button class="add-btn" onclick="addCard('certList', certCard)">+ Adicionar certificado</button>
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(7)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(9)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 9: Links extras ═══ -->
+  <div class="step" data-step="9">
+    <h2 class="step-title">Links e redes extras</h2>
+    <p class="step-subtitle">Adicione links que queira destacar no seu portfólio além dos já informados.</p>
+
+    <div class="field">
+      <label>Behance <span class="optional-badge">opcional</span></label>
+      <input type="url" id="behance" placeholder="https://behance.net/seuperfil" />
+    </div>
+    <div class="field">
+      <label>Dribbble <span class="optional-badge">opcional</span></label>
+      <input type="url" id="dribbble" placeholder="https://dribbble.com/seuperfil" />
+    </div>
+    <div class="field">
+      <label>YouTube / canal <span class="optional-badge">opcional</span></label>
+      <input type="url" id="youtube" placeholder="https://youtube.com/@seucanal" />
+    </div>
+    <div class="field">
+      <label>Outro link <span class="optional-badge">opcional</span></label>
+      <input type="url" id="extraLink" placeholder="https://..." />
+      <input type="text" id="extraLinkLabel" placeholder="Rótulo do link (Ex: Kaggle, Medium, Lattes...)" style="margin-top:.5rem" />
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(8)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(10)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 10: Paleta de cores ═══ -->
+  <div class="step" data-step="10">
+    <h2 class="step-title">Paleta de cores</h2>
+    <p class="step-subtitle">Arraste o slider para escolher a cor base e selecione uma harmonia.</p>
+
+    <div class="color-section">
+      <h4>Cor base</h4>
+      <div class="hue-slider-wrap">
+        <canvas class="hue-canvas" id="hueCanvas" height="32"></canvas>
+        <div class="hue-thumb" id="hueThumb"></div>
+      </div>
+    </div>
+
+    <div class="color-section">
+      <h4 id="colorHarmonyLabel">Harmonia de cores</h4>
+      <div class="harmony-grid" id="harmonyGrid"></div>
+    </div>
+
+    <div class="color-section">
+      <div class="sec-divider"><span id="colorPreviewLabel">Prévia da paleta</span></div>
+      <div class="palette-preview" id="palettePreview"></div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(9)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(11)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 11: Gerar ═══ -->
+  <div class="step" data-step="11">
+    <h2 class="step-title">Pronto para gerar! 🚀</h2>
+    <p class="step-subtitle">Revise o resumo abaixo e clique para criar seu portfólio.</p>
+
+    <div id="summary" class="summary-box"></div>
+
+    <div class="nav-bar">
+      <button class="btn btn-ghost" onclick="goStep(10)">← Voltar</button>
+      <button class="btn btn-generate" onclick="generatePortfolio()">✨ Gerar Portfólio</button>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TUTORIAL MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="tutorialModal" onclick="if(event.target===this)closeTutorial()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeTutorial()">✕</button>
+    <h2>Como publicar seu portfólio</h2>
+    <p class="modal-sub">Depois de gerar o arquivo HTML, veja como disponibilizá-lo online gratuitamente.</p>
+
+    <div class="tut-step">
+      <div class="tut-num">1</div>
+      <div class="tut-content">
+        <h4>Salve o arquivo HTML</h4>
+        <p>Com o portfólio aberto na nova aba, pressione <strong>Ctrl+S</strong> (ou Cmd+S no Mac) e salve o arquivo como <code>index.html</code> em uma pasta no seu computador.</p>
+      </div>
+    </div>
+    <div class="tut-step">
+      <div class="tut-num">2</div>
+      <div class="tut-content">
+        <h4>Crie um repositório no GitHub</h4>
+        <p>Acesse <strong>github.com</strong>, crie uma conta (se ainda não tiver) e clique em <em>New repository</em>. Dê um nome como <code>meu-portfolio</code> e marque como <em>Public</em>.</p>
+      </div>
+    </div>
+    <div class="tut-step">
+      <div class="tut-num">3</div>
+      <div class="tut-content">
+        <h4>Envie o arquivo para o repositório</h4>
+        <p>Dentro do repositório criado, clique em <em>Add file → Upload files</em> e arraste o <code>index.html</code> para lá. Confirme com <em>Commit changes</em>.</p>
+      </div>
+    </div>
+    <div class="tut-step">
+      <div class="tut-num">4</div>
+      <div class="tut-content">
+        <h4>Ative o GitHub Pages</h4>
+        <p>Vá em <em>Settings → Pages</em> do repositório. Em <em>Branch</em>, selecione <code>main</code> e clique em <em>Save</em>. Em alguns minutos, seu portfólio estará disponível em <code>seuusuario.github.io/meu-portfolio</code>.</p>
+      </div>
+    </div>
+    <div class="tut-step">
+      <div class="tut-num">5</div>
+      <div class="tut-content">
+        <h4>Alternativa: Vercel (ainda mais rápido)</h4>
+        <p>Acesse <strong>vercel.com</strong>, conecte sua conta do GitHub e importe o repositório. O Vercel detecta o arquivo automaticamente e publica em segundos, com um link personalizado.</p>
+      </div>
+    </div>
+
+    <div class="tut-tip">
+      <strong>💡 Domínio próprio:</strong> Tanto o GitHub Pages quanto o Vercel permitem conectar um domínio próprio (ex: <code>anaclara.dev</code>) gratuitamente. Basta comprar o domínio em um registrador e seguir as instruções de DNS de cada plataforma.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TOOL FOOTER
+══════════════════════════════════════════ -->
+<footer class="tool-footer">
+  <span class="footer-brand">Port<span>Gen</span></span>
+  <div class="footer-links">
+    <a href="https://www.linkedin.com/in/thony-barreto/" target="_blank" class="footer-link">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn
+    </a>
+    <a href="https://github.com/barretu" target="_blank" class="footer-link">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+    <a href="https://portfolio-thony-barreto.vercel.app/" target="_blank" class="footer-link">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93s3.05-7.44 7-7.93v15.86zm2 0V4.07c3.94.49 7 3.85 7 7.93s-3.05 7.44-7 7.93z"/></svg>
+      <span data-i18n="footer_portfolio">Portfólio</span>
+    </a>
+  </div>
+  <div class="footer-copy" id="footerCopy">
+    Feito por Thony Barreto · CESAR School 2026.1 · Turma B
+  </div>
+</footer>
+
+<div class="progress-bar-wrap" id="progressBarWrap"><div class="progress-bar" id="progressBar"></div></div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
