@@ -280,7 +280,7 @@ select option { background: var(--surface2); }
 /* ─── TOGGLE BUTTONS ─── */
 .toggle-group { display: flex; gap: .6rem; flex-wrap: wrap; }
 .toggle-btn {
-  padding: .55rem 1.1rem; border-radius: 999px; border: 1px solid var(--border);
+  padding: .55rem 1.1rem; border-radius: 999px; border: 2px solid var(--border);
   background: var(--surface); color: var(--text-muted); font-family: var(--font-body);
   font-size: .875rem; cursor: pointer; transition: all var(--t); user-select: none;
 }
