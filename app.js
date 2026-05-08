@@ -798,6 +798,7 @@ function renderLocationOptions(results) {
       state.location = document.getElementById('locationInput').value;
       locationSelected = true;
       dropdown.classList.remove('open');
+      autoSetDdiFromCountry(country);
     });
     dropdown.appendChild(div);
   });
@@ -812,21 +813,118 @@ function onLocationBlur() {
 // ════════════════════════════════════════════════════════
 let cardCounters = { education: 0, exp: 0, project: 0, cert: 0 };
 
+// ════════════════════════════════════════════════════════
+// SEMESTER / YEAR DATE PICKER HELPERS
+// ════════════════════════════════════════════════════════
+function semesterOptions() {
+  const currentYear = new Date().getFullYear();
+  let opts = '';
+  for (let y = currentYear + 4; y >= 1970; y--) {
+    opts += `<option value="${y}.2">${y}.2</option><option value="${y}.1">${y}.1</option>`;
+  }
+  return opts;
+}
+function getCardPeriod(card) {
+  const startSel = card.querySelector('[data-field="periodStart"]');
+  const endSel   = card.querySelector('[data-field="periodEnd"]');
+  const currentCb= card.querySelector('[data-field="periodCurrent"]');
+  if (!startSel) return card.querySelector('[data-field="period"]')?.value || '';
+  const start = startSel.value || '';
+  const end   = currentCb?.checked ? 'Atual' : (endSel?.value || '');
+  return start && end ? `${start} – ${end}` : start || end;
+}
+
+// ════════════════════════════════════════════════════════
+// UNIVERSITY AUTOCOMPLETE
+// ════════════════════════════════════════════════════════
+let univDebounceMap = {};
+function onUnivInput(e, cardId) {
+  const val = e.target.value.trim();
+  const dd = document.getElementById('univDrop-' + cardId);
+  if (!dd) return;
+  clearTimeout(univDebounceMap[cardId]);
+  if (val.length < 3) { dd.classList.remove('open'); return; }
+  univDebounceMap[cardId] = setTimeout(async () => {
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val + ' university')}&format=json&addressdetails=1&limit=8&featuretype=education`;
+      const res  = await fetch(url, { headers: { 'Accept-Language': 'pt' } });
+      const data = await res.json();
+      dd.innerHTML = '';
+      const seen = new Set();
+      data.forEach(r => {
+        const name = r.namedetails?.name || r.display_name.split(',')[0];
+        if (seen.has(name)) return; seen.add(name);
+        const a = r.address || {};
+        const country = a.country || '';
+        const div = document.createElement('div');
+        div.className = 'univ-option';
+        div.innerHTML = `<span class="univ-name">${escapeHtml(name)}</span><span class="univ-country">${escapeHtml(country)}</span>`;
+        div.addEventListener('mousedown', ev => {
+          ev.preventDefault();
+          const inp = document.getElementById('univInput-' + cardId);
+          if (inp) inp.value = name;
+          dd.classList.remove('open');
+        });
+        dd.appendChild(div);
+      });
+      if (dd.children.length) dd.classList.add('open');
+      else dd.classList.remove('open');
+    } catch { dd.classList.remove('open'); }
+  }, 400);
+}
+function onUnivBlur(cardId) {
+  setTimeout(() => {
+    const dd = document.getElementById('univDrop-' + cardId);
+    if (dd) dd.classList.remove('open');
+  }, 200);
+}
+
+// ════════════════════════════════════════════════════════
+// CARD TEMPLATES
+// ════════════════════════════════════════════════════════
 function educationCard(id) {
+  const semOpts = semesterOptions();
   return `<div class="repeater-card" id="edu-${id}">
     <button class="remove-btn" onclick="removeCard('edu-${id}')">✕</button>
     <div class="row-2">
-      <div class="field"><label>${T.institution}</label><input type="text" placeholder="${T.institution_ph}" data-field="institution" /></div>
+      <div class="field">
+        <label>${T.institution}</label>
+        <div class="univ-wrap">
+          <input type="text" id="univInput-edu${id}" placeholder="${T.institution_ph}" data-field="institution"
+            oninput="onUnivInput(event,'edu${id}')" onblur="onUnivBlur('edu${id}')" autocomplete="off" />
+          <div class="univ-dropdown" id="univDrop-edu${id}"></div>
+        </div>
+      </div>
       <div class="field"><label>${T.course}</label><input type="text" placeholder="${T.course_ph}" data-field="course" /></div>
     </div>
     <div class="row-2">
       <div class="field"><label>${T.degree}</label><select data-field="degree">${T.degrees.map(d=>`<option>${d}</option>`).join('')}</select></div>
-      <div class="field"><label>${T.period}</label><input type="text" placeholder="${T.period_ph}" data-field="period" /></div>
+      <div class="field">
+        <label>${T.period}</label>
+        <div class="date-picker">
+          <select data-field="periodStart"><option value="">Início...</option>${semOpts}</select>
+          <span class="date-sep">→</span>
+          <select data-field="periodEnd"><option value="">Término...</option>${semOpts}</select>
+        </div>
+        <div class="date-current-wrap">
+          <input type="checkbox" id="eduCurrent-${id}" data-field="periodCurrent" onchange="toggleEduCurrent(this,'edu-${id}')">
+          <label for="eduCurrent-${id}">Em andamento</label>
+        </div>
+      </div>
     </div>
     <div class="field"><label>${T.desc_optional} <span class="optional-badge">${T.optional}</span></label><textarea rows="2" placeholder="${T.edu_desc_ph}" data-field="description"></textarea></div>
   </div>`;
 }
+
+function toggleEduCurrent(cb, cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const endSel = card.querySelector('[data-field="periodEnd"]');
+  if (endSel) endSel.disabled = cb.checked;
+}
+
 function expCard(id) {
+  const semOpts = semesterOptions();
   return `<div class="repeater-card" id="exp-${id}">
     <button class="remove-btn" onclick="removeCard('exp-${id}')">✕</button>
     <div class="row-2">
@@ -834,26 +932,59 @@ function expCard(id) {
       <div class="field"><label>${T.role}</label><input type="text" placeholder="${T.role_ph}" data-field="role" /></div>
     </div>
     <div class="row-2">
-      <div class="field"><label>${T.period}</label><input type="text" placeholder="${T.period_exp_ph}" data-field="period" /></div>
+      <div class="field">
+        <label>${T.period}</label>
+        <div class="date-picker">
+          <select data-field="periodStart"><option value="">Início...</option>${semOpts}</select>
+          <span class="date-sep">→</span>
+          <select data-field="periodEnd"><option value="">Término...</option>${semOpts}</select>
+        </div>
+        <div class="date-current-wrap">
+          <input type="checkbox" id="expCurrent-${id}" data-field="periodCurrent" onchange="toggleExpCurrent(this,'exp-${id}')">
+          <label for="expCurrent-${id}">Atual (ainda trabalho aqui)</label>
+        </div>
+      </div>
       <div class="field"><label>${T.type}</label><select data-field="type">${T.exp_types.map(t=>`<option>${t}</option>`).join('')}</select></div>
     </div>
     <div class="field"><label>${T.desc_optional}</label><textarea rows="3" placeholder="${T.exp_desc_ph}" data-field="description"></textarea></div>
   </div>`;
 }
+
+function toggleExpCurrent(cb, cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const endSel = card.querySelector('[data-field="periodEnd"]');
+  if (endSel) endSel.disabled = cb.checked;
+}
+
+// Project tech tags store keyed by card id
+const projTechStores = {};
+
 function projectCard(id) {
+  projTechStores[id] = [];
   return `<div class="repeater-card" id="proj-${id}">
     <button class="remove-btn" onclick="removeCard('proj-${id}')">✕</button>
-    <div class="row-2">
-      <div class="field"><label>${T.proj_name}</label><input type="text" placeholder="${T.proj_name_ph}" data-field="name" /></div>
-      <div class="field"><label>${T.proj_tech}</label><input type="text" placeholder="${T.proj_tech_ph}" data-field="tech" /></div>
+    <div class="field"><label>${T.proj_name}</label><input type="text" placeholder="${T.proj_name_ph}" data-field="name" /></div>
+    <div class="field">
+      <label>${T.proj_tech}</label>
+      <div class="tech-tag-wrap">
+        <div class="tag-input-wrap" onclick="document.getElementById('projTechInput-${id}').focus()">
+          <div id="projTechTags-${id}" style="display:contents"></div>
+          <input class="tag-input-real" type="text" id="projTechInput-${id}"
+            placeholder="Ex: React, Node.js..."
+            oninput="onProjTechInput(event,${id})"
+            onkeydown="handleProjTechTag(event,${id})"
+          />
+        </div>
+        <div class="tech-suggestions-box" id="projTechSugg-${id}"></div>
+      </div>
+      <input type="hidden" data-field="tech" id="projTechHidden-${id}" />
     </div>
     <div class="field"><label>${T.desc_optional}</label><textarea rows="2" placeholder="${T.proj_desc_ph}" data-field="description"></textarea></div>
-    <div class="row-2">
-      <div class="field"><label>${T.proj_repo} <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="${T.proj_repo_ph}" data-field="repo" /></div>
-      <div class="field"><label>${T.proj_live} <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="${T.proj_live_ph}" data-field="live" /></div>
-    </div>
+    <div class="field"><label>Link do projeto <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="https://meu-projeto.vercel.app" data-field="live" /></div>
   </div>`;
 }
+
 function certCard(id) {
   return `<div class="repeater-card" id="cert-${id}">
     <button class="remove-btn" onclick="removeCard('cert-${id}')">✕</button>
@@ -863,8 +994,9 @@ function certCard(id) {
     </div>
     <div class="row-2">
       <div class="field"><label>${T.cert_date}</label><input type="text" placeholder="${T.cert_date_ph}" data-field="date" /></div>
-      <div class="field"><label>${T.cert_link} <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="https://..." data-field="link" /></div>
+      <div class="field"><label>Código da credencial <span class="optional-badge">${T.optional}</span></label><input type="text" placeholder="Ex: ABC123XYZ" data-field="credentialId" /></div>
     </div>
+    <div class="field"><label>${T.cert_link} <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="https://..." data-field="link" /></div>
   </div>`;
 }
 
@@ -889,7 +1021,21 @@ function collectCards(listId, fields) {
   const cards = document.querySelectorAll(`#${listId} .repeater-card`);
   return Array.from(cards).map(card => {
     const obj = {};
-    fields.forEach(f => { const el = card.querySelector(`[data-field="${f}"]`); obj[f] = el ? el.value : ''; });
+    fields.forEach(f => {
+      if (f === 'period') {
+        obj[f] = getCardPeriod(card);
+      } else if (f === 'tech') {
+        // For project cards, read from hidden input
+        const hidden = card.querySelector('[data-field="tech"]');
+        obj[f] = hidden ? hidden.value : '';
+      } else if (f === 'credentialId') {
+        const el = card.querySelector('[data-field="credentialId"]');
+        obj[f] = el ? el.value : '';
+      } else {
+        const el = card.querySelector(`[data-field="${f}"]`);
+        obj[f] = el ? el.value : '';
+      }
+    });
     return obj;
   });
 }
@@ -905,12 +1051,14 @@ function handleTag(e, containerId) {
     const inputId = containerId + 'Input';
     const input = document.getElementById(inputId);
     const val = input.value.trim().replace(/,$/, '');
-    if (!val) return;
-    if (!tagStores[containerId].includes(val)) {
+    if (val && !tagStores[containerId].includes(val)) {
       tagStores[containerId].push(val);
       renderTags(containerId);
+      closeSuggestions(containerId);
     }
     input.value = '';
+    // Keep focus inside the input
+    setTimeout(() => input.focus(), 0);
   }
 }
 function renderTags(containerId) {
@@ -1112,7 +1260,7 @@ function generatePortfolio() {
       fullName:     document.getElementById('fullName').value,
       jobTitle:     document.getElementById('jobTitle').value,
       email:        document.getElementById('email').value,
-      phone:        document.getElementById('phone').value,
+      phone:        (selectedDdi ? selectedDdi.code + ' ' : '') + document.getElementById('phone').value,
       linkedin:     document.getElementById('linkedin').value,
       github:       document.getElementById('github').value || '',
       location:     document.getElementById('locationInput').value || state.location,
@@ -1125,8 +1273,8 @@ function generatePortfolio() {
       about:        document.getElementById('about').value,
       education:    collectCards('educationList', ['institution','course','degree','period','description']),
       experience:   collectCards('expList',       ['company','role','period','type','description']),
-      projects:     collectCards('projectList',   ['name','tech','description','repo','live']),
-      certificates: collectCards('certList',      ['name','issuer','date','link']),
+      projects:     collectCards('projectList',   ['name','tech','description','live']),
+      certificates: collectCards('certList',      ['name','issuer','date','credentialId','link']),
       techSkills:   [...tagStores.techTags],
       softSkills:   [...tagStores.softTags],
       langSkills:   [...tagStores.langTags],
@@ -1191,9 +1339,9 @@ function buildPortfolioHTML(d) {
   const aboutContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.about}</h2><div class="about-grid">${d.photo?`<div class="about-photo-wrap"><img src="${d.photo}" class="about-photo" alt="${d.fullName}" /></div>`:''}<div class="about-text"><p>${d.about}</p>${d.location?`<div class="about-meta">📍 ${d.location}</div>`:''}</div></div></div>`;
   const educationContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.education}</h2><div class="timeline">${d.education.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.course||''}</div><div class="tl-sub">${e.institution||''} · ${e.degree||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
   const experienceContent= tl => `<div class="section-inner"><h2 class="sec-title">${tl.experience}</h2><div class="timeline">${d.experience.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.role||''}</div><div class="tl-sub">${e.company||''} · ${e.type||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
-  const projectsContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.projects}</h2><div class="projects-grid">${d.projects.map(p=>`<div class="project-card"><div class="project-name">${p.name||''}</div><div class="project-tech">${p.tech||''}</div><p class="project-desc">${p.description||''}</p><div class="project-links">${p.live?`<a href="${p.live}" target="_blank" class="plink">${tl.viewProject} ↗</a>`:''} ${p.repo?`<a href="${p.repo}" target="_blank" class="plink plink-ghost">${tl.viewRepo}</a>`:''}</div></div>`).join('')}</div></div>`;
+  const projectsContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.projects}</h2><div class="projects-grid">${d.projects.map(p=>`<div class="project-card"><div class="project-name">${p.name||''}</div><div class="project-tech-tags">${(p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('')}</div><p class="project-desc">${p.description||''}</p><div class="project-links">${p.live?`<a href="${p.live}" target="_blank" class="plink">${tl.viewProject} ↗</a>`:''}</div></div>`).join('')}</div></div>`;
   const skillsContent   = tl => `<div class="section-inner"><h2 class="sec-title">${tl.skills}</h2>${d.techSkills.length?`<div class="skills-group"><h3>${tl.techSkills}</h3><div class="skills-tags">${d.techSkills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div></div>`:''} ${d.softSkills.length?`<div class="skills-group"><h3>${tl.softSkills}</h3><div class="skills-tags">${d.softSkills.map(s=>`<span class="skill-tag skill-soft">${s}</span>`).join('')}</div></div>`:''} ${d.langSkills.length?`<div class="skills-group"><h3>${tl.languages}</h3><div class="skills-tags">${d.langSkills.map(s=>`<span class="skill-tag skill-lang">${s}</span>`).join('')}</div></div>`:''}</div>`;
-  const certsContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.certificates}</h2><div class="certs-grid">${d.certificates.map(c=>`<div class="cert-card"><div class="cert-icon">🎓</div><div class="cert-name">${c.name||''}</div><div class="cert-issuer">${tl.issuedBy}: ${c.issuer||''}</div><div class="cert-date">${c.date||''}</div>${c.link?`<a href="${c.link}" target="_blank" class="cert-link">${tl.viewCert} ↗</a>`:''}</div>`).join('')}</div></div>`;
+  const certsContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.certificates}</h2><div class="certs-grid">${d.certificates.map(c=>`<div class="cert-card"><div class="cert-icon">🎓</div><div class="cert-name">${c.name||''}</div><div class="cert-issuer">${tl.issuedBy}: ${c.issuer||''}</div><div class="cert-date">${c.date||''}</div>${c.credentialId?`<div class="cert-credential">ID: ${c.credentialId}</div>`:''} ${c.link?`<a href="${c.link}" target="_blank" class="cert-link">${tl.viewCert} ↗</a>`:''}</div>`).join('')}</div></div>`;
   const contactContent  = tl => `<div class="section-inner"><h2 class="sec-title">${tl.contact}</h2><div class="contact-grid">${d.email?`<a href="mailto:${d.email}" class="contact-card"><span class="contact-icon contact-email-icon">✉</span><span>${d.email}</span></a>`:''} ${d.phone?`<a href="tel:${d.phone}" class="contact-card"><span class="contact-icon">📞</span><span>${d.phone}</span></a>`:''} ${d.linkedin?`<a href="${d.linkedin}" target="_blank" class="contact-card contact-linkedin"><span class="contact-icon contact-li-icon">in</span><span>LinkedIn</span></a>`:''} ${d.github?`<a href="${d.github}" target="_blank" class="contact-card contact-github"><span class="contact-icon contact-gh-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></span><span>GitHub</span></a>`:''} ${d.website?`<a href="${d.website}" target="_blank" class="contact-card"><span class="contact-icon">🌐</span><span>Website</span></a>`:''} ${d.behance?`<a href="${d.behance}" target="_blank" class="contact-card"><span class="contact-icon">🎨</span><span>Behance</span></a>`:''} ${d.dribbble?`<a href="${d.dribbble}" target="_blank" class="contact-card"><span class="contact-icon">🏀</span><span>Dribbble</span></a>`:''} ${d.youtube?`<a href="${d.youtube}" target="_blank" class="contact-card"><span class="contact-icon">▶</span><span>YouTube</span></a>`:''} ${d.extraLink?`<a href="${d.extraLink}" target="_blank" class="contact-card"><span class="contact-icon">🔗</span><span>${d.extraLinkLabel||'Link'}</span></a>`:''}</div><div style="text-align:center;margin-top:2.5rem"><button class="resume-btn" onclick="openResume()">${tl.downloadResume}</button></div></div>`;
 
   const allSections = [
@@ -1311,8 +1459,8 @@ ${d.about?`<h2>Resumo Profissional</h2><p class="about-text">${d.about}</p>`:''}
 ${d.techSkills.length?`<h2>Habilidades</h2><div class="tags-line">${[...d.techSkills,...d.softSkills].map(s=>`<span class="tag-ats">${s}</span>`).join('')}</div>`:''}
 ${d.experience.length?`<h2>Experiência Profissional</h2>${d.experience.map(e=>`<div class="res-item"><div class="res-item-header"><span class="res-item-title">${e.role}</span><span class="res-item-period">${e.period}</span></div><div class="res-item-sub">${e.company} · ${e.type}</div>${e.description?`<div class="res-item-desc">${e.description}</div>`:''}</div>`).join('')}`:''}
 ${d.education.length?`<h2>Formação Acadêmica</h2>${d.education.map(e=>`<div class="res-item"><div class="res-item-header"><span class="res-item-title">${e.course}</span><span class="res-item-period">${e.period}</span></div><div class="res-item-sub">${e.institution} · ${e.degree}</div>${e.description?`<div class="res-item-desc">${e.description}</div>`:''}</div>`).join('')}`:''}
-${d.projects.length?`<h2>Projetos</h2>${d.projects.map(p=>`<div class="res-item"><div class="res-item-title">${p.name}</div><div class="res-item-sub">${p.tech}</div>${p.description?`<div class="res-item-desc">${p.description}</div>`:''}</div>`).join('')}`:''}
-${d.certificates.length?`<h2>Certificados</h2>${d.certificates.map(c=>`<div class="res-item"><div class="res-item-header"><span class="res-item-title">${c.name}</span><span class="res-item-period">${c.date}</span></div><div class="res-item-sub">${c.issuer}</div></div>`).join('')}`:''}
+${d.projects.length?`<h2>Projetos</h2>${d.projects.map(p=>`<div class="res-item"><div class="res-item-title">${p.name}</div><div class="res-item-sub">${p.tech}</div>${p.description?`<div class="res-item-desc">${p.description}</div>`:''} ${p.live?`<div class="res-item-desc">🔗 <a href="${p.live}" style="color:#333">${p.live}</a></div>`:''}</div>`).join('')}`:''}
+${d.certificates.length?`<h2>Certificados</h2>${d.certificates.map(c=>`<div class="res-item"><div class="res-item-header"><span class="res-item-title">${c.name}</span><span class="res-item-period">${c.date}</span></div><div class="res-item-sub">${c.issuer}${c.credentialId?' · ID: '+c.credentialId:''}</div>${c.link?`<div class="res-item-desc"><a href="${c.link}" style="color:#333">${c.link}</a></div>`:''}</div>`).join('')}`:''}
 ${d.langSkills.length?`<h2>Idiomas</h2><div class="tags-line">${d.langSkills.map(l=>`<span class="tag-ats">${l}</span>`).join('')}</div>`:''}
 <div style="margin-top:2rem;text-align:center">
   <button onclick="window.print()" style="padding:.6rem 1.8rem;background:#111;color:#fff;border:none;border-radius:6px;font-size:10pt;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">🖨️ Imprimir / Salvar como PDF</button>
@@ -1375,7 +1523,7 @@ ${d.photo?`.hero-photo-wrap{position:relative}.hero-photo{width:220px;height:220
 .project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:transform .2s,border-color .2s;display:flex;flex-direction:column;gap:.6rem}
 .project-card:hover{transform:translateY(-4px);border-color:var(--c1)}
 .project-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:1.05rem}
-.project-tech{font-size:.78rem;color:var(--c1);font-weight:500}
+.project-tech-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin:.3rem 0}.proj-tech-pill{font-size:.72rem;font-weight:500;padding:.18rem .6rem;border-radius:999px;background:rgba(0,0,0,.12);border:1px solid var(--border);color:var(--c1)}
 .project-desc{color:var(--text-muted);font-size:.9rem;flex:1}
 .project-links{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
 .plink{font-size:.8rem;font-weight:500;text-decoration:none;padding:.35rem .85rem;border-radius:999px;background:var(--c1);color:#fff;transition:opacity .2s}
@@ -1395,7 +1543,7 @@ ${d.photo?`.hero-photo-wrap{position:relative}.hero-photo{width:220px;height:220
 .cert-name{font-weight:600;font-size:.95rem;margin-bottom:.3rem}
 .cert-issuer{font-size:.8rem;color:var(--text-muted)}
 .cert-date{font-size:.8rem;color:var(--c1);margin:.25rem 0}
-.cert-link{font-size:.8rem;color:var(--c1);text-decoration:none;font-weight:500}
+.cert-credential{font-size:.75rem;color:var(--text-muted);margin:.15rem 0;font-family:monospace;letter-spacing:.03em}.cert-link{font-size:.8rem;color:var(--c1);text-decoration:none;font-weight:500}
 .contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
 .contact-card{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--text);font-size:.9rem;font-weight:500;transition:all .2s}
 .contact-card:hover{border-color:var(--c1);transform:translateY(-2px)}
@@ -1451,6 +1599,324 @@ function openResume(){
 <\/script>
 </body>
 </html>`;
+}
+
+// ════════════════════════════════════════════════════════
+// DDI — PHONE COUNTRY CODE
+// ════════════════════════════════════════════════════════
+const DDI_LIST = [
+  {flag:'🇧🇷',name:'Brasil',code:'+55',mask:'(##) #####-####'},
+  {flag:'🇺🇸',name:'Estados Unidos',code:'+1',mask:'(###) ###-####'},
+  {flag:'🇵🇹',name:'Portugal',code:'+351',mask:'### ### ###'},
+  {flag:'🇦🇷',name:'Argentina',code:'+54',mask:'(###) ###-####'},
+  {flag:'🇨🇱',name:'Chile',code:'+56',mask:'# #### ####'},
+  {flag:'🇨🇴',name:'Colômbia',code:'+57',mask:'### ### ####'},
+  {flag:'🇲🇽',name:'México',code:'+52',mask:'## #### ####'},
+  {flag:'🇵🇪',name:'Peru',code:'+51',mask:'### ### ###'},
+  {flag:'🇻🇪',name:'Venezuela',code:'+58',mask:'###-###-####'},
+  {flag:'🇺🇾',name:'Uruguai',code:'+598',mask:'## ### ####'},
+  {flag:'🇬🇧',name:'Reino Unido',code:'+44',mask:'#### ### ####'},
+  {flag:'🇩🇪',name:'Alemanha',code:'+49',mask:'#### #######'},
+  {flag:'🇫🇷',name:'França',code:'+33',mask:'## ## ## ## ##'},
+  {flag:'🇮🇹',name:'Itália',code:'+39',mask:'### ### ####'},
+  {flag:'🇪🇸',name:'Espanha',code:'+34',mask:'### ### ###'},
+  {flag:'🇳🇱',name:'Holanda',code:'+31',mask:'## ### ####'},
+  {flag:'🇨🇦',name:'Canadá',code:'+1',mask:'(###) ###-####'},
+  {flag:'🇦🇺',name:'Austrália',code:'+61',mask:'#### ### ###'},
+  {flag:'🇯🇵',name:'Japão',code:'+81',mask:'##-####-####'},
+  {flag:'🇨🇳',name:'China',code:'+86',mask:'### #### ####'},
+  {flag:'🇮🇳',name:'Índia',code:'+91',mask:'##### #####'},
+  {flag:'🇿🇦',name:'África do Sul',code:'+27',mask:'## ### ####'},
+  {flag:'🇳🇬',name:'Nigéria',code:'+234',mask:'### ### ####'},
+  {flag:'🇸🇦',name:'Arábia Saudita',code:'+966',mask:'## ### ####'},
+  {flag:'🇦🇪',name:'Emirados Árabes',code:'+971',mask:'## ### ####'},
+];
+
+let selectedDdi = DDI_LIST[0];
+
+function initDdiDropdown() {
+  const list = document.getElementById('ddiList');
+  if (!list) return;
+  renderDdiList(DDI_LIST);
+}
+function renderDdiList(items) {
+  const list = document.getElementById('ddiList');
+  list.innerHTML = '';
+  items.forEach(d => {
+    const div = document.createElement('div');
+    div.className = 'ddi-option';
+    div.innerHTML = `<span class="ddi-flag">${d.flag}</span><span class="ddi-name">${escapeHtml(d.name)}</span><span class="ddi-num">${d.code}</span>`;
+    div.addEventListener('click', () => selectDdi(d));
+    list.appendChild(div);
+  });
+}
+function filterDdi(query) {
+  const q = query.toLowerCase();
+  renderDdiList(DDI_LIST.filter(d => d.name.toLowerCase().includes(q) || d.code.includes(q)));
+}
+function selectDdi(ddi) {
+  selectedDdi = ddi;
+  const flagEl = document.getElementById('phoneDdiFlag');
+  const codeEl = document.getElementById('phoneDdiCode');
+  if (flagEl) flagEl.textContent = ddi.flag;
+  if (codeEl) codeEl.textContent = ddi.code;
+  const dd = document.getElementById('ddiDropdown');
+  if (dd) dd.classList.remove('open');
+  const phoneInput = document.getElementById('phone');
+  if (phoneInput) { phoneInput.placeholder = ddi.mask.replace(/#/g,'0'); phoneInput.focus(); }
+}
+function toggleDdiDropdown() {
+  const dd = document.getElementById('ddiDropdown');
+  if (!dd) return;
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    setTimeout(() => document.getElementById('ddiSearch')?.focus(), 50);
+  }
+}
+function autoSetDdiFromCountry(countryName) {
+  if (!countryName) return;
+  const cn = countryName.toLowerCase();
+  const map = {
+    'brasil':'🇧🇷','brazil':'🇧🇷','portugal':'🇵🇹','argentina':'🇦🇷','chile':'🇨🇱',
+    'colombia':'🇨🇴','colômbia':'🇨🇴','mexico':'🇲🇽','méxico':'🇲🇽',
+    'united states':'🇺🇸','estados unidos':'🇺🇸','peru':'🇵🇪','venezuela':'🇻🇪',
+    'uruguai':'🇺🇾','uruguay':'🇺🇾','united kingdom':'🇬🇧','reino unido':'🇬🇧',
+    'germany':'🇩🇪','alemanha':'🇩🇪','france':'🇫🇷','franca':'🇫🇷','france':'🇫🇷',
+    'italy':'🇮🇹','itália':'🇮🇹','spain':'🇪🇸','espanha':'🇪🇸',
+    'netherlands':'🇳🇱','holanda':'🇳🇱','canada':'🇨🇦','canadá':'🇨🇦',
+    'australia':'🇦🇺','austrália':'🇦🇺','japan':'🇯🇵','japão':'🇯🇵',
+    'china':'🇨🇳','india':'🇮🇳','índia':'🇮🇳',
+  };
+  for (const [key, flag] of Object.entries(map)) {
+    if (cn.includes(key)) {
+      const ddi = DDI_LIST.find(d => d.flag === flag);
+      if (ddi) selectDdi(ddi);
+      return;
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// SKILL SUGGESTIONS
+// ════════════════════════════════════════════════════════
+const TECH_SKILLS_LIST = [
+  'JavaScript','TypeScript','Python','Java','C#','C++','C','Go','Rust','Swift','Kotlin','PHP','Ruby','Scala','R',
+  'HTML','CSS','Sass/SCSS','React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','Astro','Remix',
+  'Node.js','Express','NestJS','Django','Flask','FastAPI','Spring Boot','Laravel','Ruby on Rails',
+  'React Native','Flutter','SwiftUI','Jetpack Compose',
+  'SQL','PostgreSQL','MySQL','MongoDB','Redis','SQLite','Firebase','Supabase','Prisma','Drizzle',
+  'GraphQL','REST API','WebSockets','tRPC',
+  'Docker','Kubernetes','AWS','Google Cloud','Azure','Vercel','Netlify','Railway','Heroku',
+  'Git','GitHub','GitLab','CI/CD','GitHub Actions','Linux','Bash',
+  'Figma','Adobe XD','Sketch','Tailwind CSS','Bootstrap','Material UI','Chakra UI','shadcn/ui',
+  'TensorFlow','PyTorch','Scikit-learn','Pandas','NumPy','OpenCV',
+  'Arduino','Raspberry Pi','Unity','Unreal Engine','Blender','Three.js','WebGL',
+  'Terraform','Ansible','Nginx','Apache','Webpack','Vite','Babel',
+  'Jest','Cypress','Playwright','Vitest','Testing Library',
+];
+const SOFT_SKILLS_LIST = [
+  'Comunicação','Trabalho em equipe','Liderança','Resolução de problemas','Pensamento crítico',
+  'Criatividade','Adaptabilidade','Gestão do tempo','Proatividade','Autonomia',
+  'Empatia','Negociação','Tomada de decisão','Organização','Planejamento',
+  'Resiliência','Colaboração','Atenção aos detalhes','Visão estratégica','Mentoria',
+  'Apresentação','Escuta ativa','Gestão de conflitos','Feedback construtivo','Inteligência emocional',
+];
+const LANGUAGES_LIST = [
+  'Português','Inglês','Espanhol','Francês','Alemão','Italiano','Mandarim','Japonês',
+  'Coreano','Árabe','Russo','Hindi','Holandês','Polonês','Sueco','Norueguês','Dinamarquês',
+  'Finlandês','Grego','Turco','Hebraico','Persa','Tailandês','Vietnamita','Indonésio',
+];
+const LANG_LEVELS = ['Nativo','C2 - Proficiente','C1 - Avançado','B2 - Intermediário Alto','B1 - Intermediário','A2 - Básico','A1 - Iniciante'];
+
+function initSkillChips() {
+  // Tech chips
+  const techChips = document.getElementById('techChips');
+  if (techChips) {
+    const popular = ['JavaScript','Python','React','Node.js','TypeScript','HTML','CSS','Git','SQL','Figma'];
+    popular.forEach(s => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'skill-chip';
+      chip.textContent = s;
+      chip.addEventListener('click', () => addSkillChip(s, 'techTags', chip));
+      techChips.appendChild(chip);
+    });
+  }
+  // Soft chips
+  const softChips = document.getElementById('softChips');
+  if (softChips) {
+    const popular = ['Comunicação','Trabalho em equipe','Liderança','Proatividade','Criatividade','Adaptabilidade','Organização'];
+    popular.forEach(s => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'skill-chip';
+      chip.textContent = s;
+      chip.addEventListener('click', () => addSkillChip(s, 'softTags', chip));
+      softChips.appendChild(chip);
+    });
+  }
+  // Language select
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    LANGUAGES_LIST.forEach(l => {
+      const opt = document.createElement('option');
+      opt.value = l; opt.textContent = l;
+      langSelect.appendChild(opt);
+    });
+  }
+}
+
+function addSkillChip(val, containerId, chipEl) {
+  if (tagStores[containerId].includes(val)) return;
+  tagStores[containerId].push(val);
+  renderTags(containerId);
+  if (chipEl) chipEl.classList.add('added');
+}
+
+function onSkillInput(e, containerId) {
+  const val = e.target.value.trim();
+  const list = containerId === 'techTags' ? TECH_SKILLS_LIST : SOFT_SKILLS_LIST;
+  const box = document.getElementById(containerId + 'Suggestions');
+  if (!box) return;
+  if (!val) { box.classList.remove('open'); return; }
+  const matches = list.filter(s => s.toLowerCase().startsWith(val.toLowerCase()) && !tagStores[containerId].includes(s)).slice(0, 8);
+  box.innerHTML = '';
+  matches.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'skill-sugg-item';
+    div.textContent = s;
+    div.addEventListener('mousedown', ev => {
+      ev.preventDefault();
+      addTagDirect(s, containerId);
+      e.target.value = '';
+      box.classList.remove('open');
+      setTimeout(() => e.target.focus(), 0);
+    });
+    box.appendChild(div);
+  });
+  if (matches.length) box.classList.add('open'); else box.classList.remove('open');
+}
+
+function showSkillSuggestions(containerId) {
+  // Show chip panel
+  const panelId = containerId === 'techTags' ? 'techChipsPanel' : 'softChipsPanel';
+  const panel = document.getElementById(panelId);
+  if (panel) panel.style.display = 'block';
+}
+
+function closeSuggestions(containerId) {
+  const box = document.getElementById(containerId + 'Suggestions');
+  if (box) box.classList.remove('open');
+}
+
+function addTagDirect(val, containerId) {
+  if (!val || tagStores[containerId].includes(val)) return;
+  tagStores[containerId].push(val);
+  renderTags(containerId);
+  // Mark chip as added if exists
+  const chips = document.querySelectorAll(`#${containerId === 'techTags' ? 'techChips' : 'softChips'} .skill-chip`);
+  chips.forEach(c => { if (c.textContent === val) c.classList.add('added'); });
+}
+
+function addLanguage() {
+  const langSel  = document.getElementById('langSelect');
+  const levelSel = document.getElementById('langLevelSelect');
+  if (!langSel || !langSel.value) return;
+  const val = `${langSel.value} (${levelSel.value})`;
+  if (!tagStores.langTags.includes(val)) {
+    tagStores.langTags.push(val);
+    renderLangTags();
+  }
+  langSel.value = '';
+}
+
+function renderLangTags() {
+  const wrap = document.getElementById('langTags');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  tagStores.langTags.forEach(tag => {
+    const el = document.createElement('div');
+    el.className = 'tag';
+    const safe = tag.replace(/'/g, "\\'");
+    el.innerHTML = `${escapeHtml(tag)}<button type="button" onclick="removeLangTag('${safe}')">✕</button>`;
+    wrap.appendChild(el);
+  });
+}
+
+function removeLangTag(val) {
+  tagStores.langTags = tagStores.langTags.filter(t => t !== val);
+  renderLangTags();
+}
+
+// ════════════════════════════════════════════════════════
+// PROJECT TECH TAGS (autocomplete)
+// ════════════════════════════════════════════════════════
+function onProjTechInput(e, cardId) {
+  const val = e.target.value.trim();
+  const box = document.getElementById('projTechSugg-' + cardId);
+  if (!box) return;
+  if (!val) { box.classList.remove('open'); return; }
+  const matches = TECH_SKILLS_LIST.filter(s =>
+    s.toLowerCase().includes(val.toLowerCase()) &&
+    !(projTechStores[cardId] || []).includes(s)
+  ).slice(0, 8);
+  box.innerHTML = '';
+  matches.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'tech-sugg-item';
+    div.textContent = s;
+    div.addEventListener('mousedown', ev => {
+      ev.preventDefault();
+      addProjTechTag(s, cardId);
+      e.target.value = '';
+      box.classList.remove('open');
+      setTimeout(() => e.target.focus(), 0);
+    });
+    box.appendChild(div);
+  });
+  if (matches.length) box.classList.add('open'); else box.classList.remove('open');
+}
+
+function handleProjTechTag(e, cardId) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const input = document.getElementById('projTechInput-' + cardId);
+    const val = input.value.trim().replace(/,$/, '');
+    if (val) addProjTechTag(val, cardId);
+    input.value = '';
+    const box = document.getElementById('projTechSugg-' + cardId);
+    if (box) box.classList.remove('open');
+    setTimeout(() => input.focus(), 0);
+  }
+}
+
+function addProjTechTag(val, cardId) {
+  if (!projTechStores[cardId]) projTechStores[cardId] = [];
+  if (projTechStores[cardId].includes(val)) return;
+  projTechStores[cardId].push(val);
+  renderProjTechTags(cardId);
+}
+
+function removeProjTechTag(val, cardId) {
+  projTechStores[cardId] = projTechStores[cardId].filter(t => t !== val);
+  renderProjTechTags(cardId);
+}
+
+function renderProjTechTags(cardId) {
+  const wrap = document.getElementById('projTechTags-' + cardId);
+  const input = document.getElementById('projTechInput-' + cardId);
+  const hidden = document.getElementById('projTechHidden-' + cardId);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  (projTechStores[cardId] || []).forEach(tag => {
+    const el = document.createElement('div');
+    el.className = 'tag';
+    const safe = tag.replace(/'/g, "\\'");
+    el.innerHTML = `${escapeHtml(tag)}<button type="button" onclick="removeProjTechTag('${safe}',${cardId})">✕</button>`;
+    wrap.appendChild(el);
+  });
+  if (input) wrap.appendChild(input);
+  if (hidden) hidden.value = (projTechStores[cardId] || []).join(', ');
 }
 
 // ════════════════════════════════════════════════════════
@@ -1511,19 +1977,37 @@ window.addEventListener('load', () => {
   // Scroll reveal
   initScrollReveal();
 
+  // DDI phone dropdown
+  initDdiDropdown();
+
+  // Skill suggestion chips
+  initSkillChips();
+
   // Tag nav buttons for i18n
   tagNavButtons();
 
-  // Close location dropdown on outside click
+  // Close dropdowns on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('.location-search-wrap')) {
       const dd = document.getElementById('locationDropdown');
       if (dd) dd.classList.remove('open');
     }
-    // Close lang dropdown on outside click
     if (!e.target.closest('.tool-lang-dropdown')) {
       const ld = document.getElementById('toolLangDropdown');
       if (ld) ld.classList.remove('open');
+    }
+    if (!e.target.closest('.phone-wrap')) {
+      const dd = document.getElementById('ddiDropdown');
+      if (dd) dd.classList.remove('open');
+    }
+    // Close skill suggestion boxes
+    if (!e.target.closest('.field')) {
+      document.querySelectorAll('.skill-suggestions-box').forEach(b => b.classList.remove('open'));
+      document.querySelectorAll('.tech-suggestions-box').forEach(b => b.classList.remove('open'));
+    }
+    // Close univ dropdowns
+    if (!e.target.closest('.univ-wrap')) {
+      document.querySelectorAll('.univ-dropdown').forEach(d => d.classList.remove('open'));
     }
   });
 

@@ -504,3 +504,157 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
 @media(max-width:360px){
   .steps-row { grid-template-columns: 1fr; }
 }
+/* ─── REPEATER CARD RESPONSIVENESS ─── */
+.repeater-card .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
+@media(max-width:640px) {
+  .repeater-card .row-2 { grid-template-columns: 1fr; gap: .6rem; }
+  .repeater-card { padding: 1rem .9rem; }
+  .main { padding: 2rem 1rem 4rem; }
+}
+
+/* ─── PHONE DDI ─── */
+.phone-wrap { display: flex; position: relative; }
+.phone-ddi-btn {
+  display: flex; align-items: center; gap: .35rem;
+  padding: .85rem .85rem; border-radius: var(--radius) 0 0 var(--radius);
+  border: 1px solid var(--border); border-right: none;
+  background: var(--surface); color: var(--text);
+  font-family: var(--font-body); font-size: .88rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap; transition: all var(--t);
+  flex-shrink: 0;
+}
+.phone-ddi-btn:hover { border-color: var(--accent); color: var(--accent); }
+.ddi-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(0,0,0,.3); z-index: 300;
+  width: 280px; display: none; animation: dropIn .2s ease both;
+}
+.ddi-dropdown.open { display: block; }
+.ddi-search-wrap { padding: .5rem; border-bottom: 1px solid var(--border); }
+.ddi-search {
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text); font-family: var(--font-body);
+  font-size: .85rem; padding: .5rem .75rem; outline: none;
+}
+.ddi-search:focus { border-color: var(--accent); }
+.ddi-list { max-height: 220px; overflow-y: auto; }
+.ddi-option {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .55rem 1rem; cursor: pointer; font-size: .88rem;
+  transition: background var(--t); border-bottom: 1px solid var(--border);
+}
+.ddi-option:last-child { border-bottom: none; }
+.ddi-option:hover { background: var(--surface); }
+.ddi-option .ddi-flag { font-size: 1.1rem; flex-shrink: 0; }
+.ddi-option .ddi-name { flex: 1; font-size: .83rem; color: var(--text-muted); }
+.ddi-option .ddi-num { font-weight: 600; font-size: .83rem; color: var(--accent); flex-shrink:0; }
+
+/* ─── UNIVERSITY AUTOCOMPLETE ─── */
+.univ-wrap { position: relative; }
+.univ-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(0,0,0,.25); z-index: 200;
+  max-height: 220px; overflow-y: auto; display: none;
+  animation: dropIn .2s ease both;
+}
+.univ-dropdown.open { display: block; }
+.univ-option {
+  padding: .6rem 1rem; font-size: .88rem; cursor: pointer;
+  border-bottom: 1px solid var(--border); transition: background var(--t);
+}
+.univ-option:last-child { border-bottom: none; }
+.univ-option:hover { background: var(--surface); }
+.univ-option .univ-name { font-weight: 500; display: block; }
+.univ-option .univ-country { font-size: .75rem; color: var(--text-muted); display: block; }
+
+/* ─── DATE PICKER (semester/year) ─── */
+.date-picker {
+  display: flex; gap: .5rem; align-items: center; flex-wrap: wrap;
+}
+.date-picker select {
+  flex: 1; min-width: 80px;
+}
+.date-picker .date-sep {
+  color: var(--text-muted); font-size: .85rem; flex-shrink: 0;
+}
+.date-current-wrap {
+  display: flex; align-items: center; gap: .5rem; margin-top: .4rem;
+}
+.date-current-wrap input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor:pointer; }
+.date-current-wrap label { font-size: .83rem; color: var(--text-muted); cursor: pointer; }
+
+/* ─── SKILL SUGGESTIONS ─── */
+.skill-suggestions-box {
+  position: relative; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,.2);
+  max-height: 180px; overflow-y: auto; display: none; z-index: 200;
+  margin-top: 2px; animation: dropIn .15s ease both;
+}
+.skill-suggestions-box.open { display: block; }
+.skill-sugg-item {
+  padding: .5rem 1rem; cursor: pointer; font-size: .88rem;
+  border-bottom: 1px solid var(--border); transition: background var(--t);
+}
+.skill-sugg-item:last-child { border-bottom: none; }
+.skill-sugg-item:hover, .skill-sugg-item.highlighted { background: var(--surface); }
+
+.skill-chips-panel { margin-top: .75rem; }
+.chips-section-label {
+  font-size: .7rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--text-muted); margin-bottom: .5rem;
+}
+.chips-row { display: flex; flex-wrap: wrap; gap: .4rem; }
+.skill-chip {
+  padding: .28rem .75rem; border-radius: 999px; font-size: .8rem; font-weight: 500;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-muted);
+  cursor: pointer; transition: all var(--t); user-select: none;
+}
+.skill-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.skill-chip.added { border-color: var(--accent2); color: var(--accent2); background: rgba(56,189,248,.1); cursor: default; }
+
+/* ─── LANG PICKER ─── */
+.lang-picker-row {
+  display: flex; gap: .5rem; align-items: stretch; flex-wrap: wrap;
+}
+.lang-select { flex: 2; min-width: 140px; }
+.lang-level-select { flex: 1; min-width: 120px; }
+.lang-add-btn {
+  padding: .7rem 1.1rem; border-radius: var(--radius); border: none;
+  background: var(--accent); color: #fff; font-family: var(--font-body);
+  font-size: .85rem; font-weight: 600; cursor: pointer; transition: all var(--t);
+  white-space: nowrap; flex-shrink: 0;
+}
+.lang-add-btn:hover { opacity: .88; transform: translateY(-1px); }
+
+/* ─── TECH TAGS AUTOCOMPLETE in project cards ─── */
+.tech-tag-wrap { position: relative; }
+.tech-suggestions-box {
+  position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(0,0,0,.22); max-height: 160px; overflow-y: auto;
+  display: none; z-index: 250; animation: dropIn .15s ease both;
+}
+.tech-suggestions-box.open { display: block; }
+.tech-sugg-item {
+  padding: .45rem .9rem; cursor: pointer; font-size: .85rem;
+  border-bottom: 1px solid var(--border); transition: background var(--t);
+}
+.tech-sugg-item:last-child { border-bottom: none; }
+.tech-sugg-item:hover { background: var(--surface); }
+
+/* ─── PROJECT CARD TECH TAGS ─── */
+.proj-tech-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
+.proj-tech-tag {
+  background: var(--accent-glow); border: 1px solid rgba(37,99,168,.35);
+  border-radius: 999px; padding: .18rem .6rem; font-size: .78rem; color: var(--text);
+  display: inline-flex; align-items: center; gap: .25rem;
+  animation: tagPop .2s cubic-bezier(.34,1.56,.64,1) both;
+}
+.proj-tech-tag button {
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; font-size: .65rem; line-height: 1; padding: 0;
+  transition: color var(--t);
+}
+.proj-tech-tag button:hover { color: #e05555; }

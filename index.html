@@ -199,7 +199,18 @@
       </div>
       <div class="field">
         <label>Telefone <span class="optional-badge">opcional</span></label>
-        <input type="tel" id="phone" placeholder="Ex: +55 11 99999-0000" />
+        <div class="phone-wrap">
+          <button type="button" class="phone-ddi-btn" id="phoneDdiBtn" onclick="toggleDdiDropdown()">
+            <span id="phoneDdiFlag">&#x1F1E7;&#x1F1F7;</span>
+            <span id="phoneDdiCode">+55</span>
+            <svg viewBox="0 0 10 6" fill="none" style="width:10px;height:6px;flex-shrink:0"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <input type="tel" id="phone" placeholder="(81) 99999-0000" style="border-radius:0 var(--radius) var(--radius) 0;border-left:none" />
+          <div class="ddi-dropdown" id="ddiDropdown">
+            <div class="ddi-search-wrap"><input type="text" class="ddi-search" id="ddiSearch" placeholder="Buscar pais..." oninput="filterDdi(this.value)" /></div>
+            <div class="ddi-list" id="ddiList"></div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="row-2">
@@ -298,29 +309,63 @@
   <!-- ═══ STEP 7: Habilidades ═══ -->
   <div class="step" data-step="7">
     <h2 class="step-title">Habilidades</h2>
-    <p class="step-subtitle">Escreva uma habilidade e pressione <kbd>Enter</kbd> ou <kbd>,</kbd> para adicionar.</p>
+    <p class="step-subtitle">Escreva ou clique nas sugestões para adicionar. Pressione <kbd>Enter</kbd> ou <kbd>,</kbd> para confirmar.</p>
 
     <div class="field">
       <label>Habilidades técnicas</label>
-      <div class="tag-input-wrap" onclick="document.getElementById('techTagsInput').focus()">
+      <div class="tag-input-wrap" id="techTagsWrap" onclick="document.getElementById('techTagsInput').focus()">
         <div id="techTags" style="display:contents"></div>
-        <input class="tag-input-real" type="text" id="techTagsInput" placeholder="Ex: JavaScript, React, Python..." onkeydown="handleTag(event,'techTags')" />
+        <input class="tag-input-real" type="text" id="techTagsInput" placeholder="Ex: JavaScript, React, Python..."
+          oninput="onSkillInput(event,'techTags')"
+          onkeydown="handleTag(event,'techTags')"
+          onfocus="showSkillSuggestions('techTags')"
+        />
+      </div>
+      <div class="skill-suggestions-box" id="techTagsSuggestions"></div>
+      <div class="skill-chips-panel" id="techChipsPanel">
+        <div class="chips-section-label">Populares</div>
+        <div class="chips-row" id="techChips"></div>
       </div>
     </div>
 
     <div class="field">
       <label>Soft skills <span class="optional-badge">opcional</span></label>
-      <div class="tag-input-wrap" onclick="document.getElementById('softTagsInput').focus()">
+      <div class="tag-input-wrap" id="softTagsWrap" onclick="document.getElementById('softTagsInput').focus()">
         <div id="softTags" style="display:contents"></div>
-        <input class="tag-input-real" type="text" id="softTagsInput" placeholder="Ex: Liderança, Comunicação, Trabalho em equipe..." onkeydown="handleTag(event,'softTags')" />
+        <input class="tag-input-real" type="text" id="softTagsInput" placeholder="Ex: Liderança, Comunicação..."
+          oninput="onSkillInput(event,'softTags')"
+          onkeydown="handleTag(event,'softTags')"
+          onfocus="showSkillSuggestions('softTags')"
+        />
+      </div>
+      <div class="skill-suggestions-box" id="softTagsSuggestions"></div>
+      <div class="skill-chips-panel" id="softChipsPanel">
+        <div class="chips-section-label">Sugestões</div>
+        <div class="chips-row" id="softChips"></div>
       </div>
     </div>
 
     <div class="field">
       <label>Idiomas <span class="optional-badge">opcional</span></label>
-      <div class="tag-input-wrap" onclick="document.getElementById('langTagsInput').focus()">
-        <div id="langTags" style="display:contents"></div>
-        <input class="tag-input-real" type="text" id="langTagsInput" placeholder="Ex: Português (nativo), Inglês (B2)..." onkeydown="handleTag(event,'langTags')" />
+      <div class="lang-picker" id="langPicker">
+        <div class="lang-picker-row">
+          <select id="langSelect" class="lang-select">
+            <option value="">Selecione um idioma...</option>
+          </select>
+          <select id="langLevelSelect" class="lang-level-select">
+            <option value="Nativo">Nativo</option>
+            <option value="C2">C2 - Proficiente</option>
+            <option value="C1">C1 - Avançado</option>
+            <option value="B2">B2 - Intermediário Alto</option>
+            <option value="B1">B1 - Intermediário</option>
+            <option value="A2">A2 - Básico</option>
+            <option value="A1">A1 - Iniciante</option>
+          </select>
+          <button type="button" class="lang-add-btn" onclick="addLanguage()">+ Adicionar</button>
+        </div>
+        <div class="tag-input-wrap" id="langTagsWrap" style="margin-top:.5rem;min-height:40px;cursor:default">
+          <div id="langTags" style="display:contents"></div>
+        </div>
       </div>
     </div>
 
