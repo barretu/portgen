@@ -1398,9 +1398,15 @@ function updateThumb() {
   const canvas = document.getElementById('hueCanvas');
   const thumb  = document.getElementById('hueThumb');
   if (!canvas || !thumb) return;
-  const pct  = selectedHue / 360;
-  const rect = canvas.getBoundingClientRect();
-  thumb.style.left = (pct * (rect.width || canvas.offsetWidth)) + 'px';
+  const pct    = selectedHue / 360;
+  const w      = rect => rect.width || canvas.offsetWidth;
+  const rect   = canvas.getBoundingClientRect();
+  const thumbR = thumb.offsetWidth / 2;
+  const trackW = w(rect);
+  // Clamp so thumb never visually overflows the canvas
+  const rawLeft = pct * trackW;
+  const clamped = Math.max(thumbR, Math.min(trackW - thumbR, rawLeft));
+  thumb.style.left = clamped + 'px';
   thumb.style.background = `hsl(${selectedHue},80%,55%)`;
 }
 function renderHarmonyGrid() {

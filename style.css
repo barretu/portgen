@@ -134,10 +134,30 @@ body {
   pointer-events: none; opacity: 0;
   transition: opacity .15s ease, transform .15s ease;
   z-index: 200;
+  /* Prevent tooltip from going off screen edges */
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .step-dot-wrap:hover .step-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+/* Last few dots: anchor tooltip to the right edge instead of center */
+.step-dot-wrap:nth-last-child(-n+3) .step-tooltip {
+  left: auto; right: 0;
+  transform: translateX(0) translateY(-4px);
+}
+.step-dot-wrap:nth-last-child(-n+3):hover .step-tooltip {
+  transform: translateX(0) translateY(0);
+}
+/* First few dots: anchor tooltip to the left edge */
+.step-dot-wrap:nth-child(-n+3) .step-tooltip {
+  left: 0; right: auto;
+  transform: translateX(0) translateY(-4px);
+}
+.step-dot-wrap:nth-child(-n+3):hover .step-tooltip {
+  transform: translateX(0) translateY(0);
 }
 
 .step-dot {
@@ -331,7 +351,7 @@ select option { background: var(--surface2); }
 /* ─── TOGGLE BUTTONS ─── */
 .toggle-group { display: flex; gap: .6rem; flex-wrap: wrap; }
 .toggle-btn {
-  padding: .55rem 1.1rem; border-radius: 999px; border: 1px solid var(--border);
+  padding: .55rem 1.1rem; border-radius: 999px; border: 2px solid var(--border);
   background: var(--surface); color: var(--text-muted); font-family: var(--font-body);
   font-size: .875rem; cursor: pointer; transition: all var(--t); user-select: none;
 }
@@ -363,11 +383,12 @@ select option { background: var(--surface2); }
 /* ─── COLOR PICKER ─── */
 .color-section { margin-bottom: 2rem; }
 .color-section h4 { font-family: var(--font-heading); font-size: .85rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
-.hue-slider-wrap { position: relative; margin-bottom: 1.25rem; }
-.hue-canvas { width: 100%; height: 36px; border-radius: 999px; cursor: crosshair; border: 2px solid var(--border); transition: box-shadow var(--t); }
+.hue-slider-wrap { position: relative; margin-bottom: 1.25rem; display: flex; align-items: center; }
+.hue-canvas { width: 100%; height: 36px; border-radius: 999px; cursor: crosshair; border: 2px solid var(--border); transition: box-shadow var(--t); display: block; }
 .hue-canvas:hover { box-shadow: 0 0 0 3px var(--accent-glow); }
 .hue-thumb {
-  position: absolute; top: 50%; transform: translate(-50%,-50%);
+  position: absolute; top: 50%; left: 0;
+  transform: translate(-50%, -50%);
   width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff;
   box-shadow: 0 2px 12px rgba(0,0,0,.5); pointer-events: none; transition: left .05s;
 }
