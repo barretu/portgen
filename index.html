@@ -31,9 +31,6 @@
         <button class="tool-lang-opt" data-lang="fr" data-flag="🇫🇷" onclick="setToolLang(this)">🇫🇷 Français</button>
       </div>
     </div>
-    <div id="stepIndicatorWrap" style="display:none">
-      <div class="step-indicator" id="stepIndicator"></div>
-    </div>
     <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleToolTheme()" title="Alternar tema">☀️</button>
   </div>
 </header>
@@ -128,6 +125,12 @@
      WIZARD (TOOL VIEW)
 ══════════════════════════════════════════ -->
 <div id="toolView" class="tool-view">
+
+<!-- ══ STEP INDICATOR BAR ══ -->
+<div id="stepIndicatorWrap" class="step-indicator-bar" style="display:none">
+  <div class="step-indicator" id="stepIndicator"></div>
+</div>
+
 <main class="main">
 
   <!-- ═══ STEP 1: Configurações gerais ═══ -->

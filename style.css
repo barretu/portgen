@@ -104,15 +104,66 @@ body {
   box-shadow: 0 0 10px rgba(56,189,248,.6);
 }
 
-/* Step dots */
-.step-indicator { display: flex; gap: 6px; align-items: center; }
-.step-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--border); transition: all .3s; cursor: default;
+/* Step indicator bar — acima do main, fora do header */
+.step-indicator-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: .85rem 1.5rem .9rem;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--t), border-color var(--t);
+  overflow: visible;
+  z-index: 95;
 }
-.step-dot.done { background: var(--accent2); cursor: pointer; }
-.step-dot.done:hover { transform: scale(1.4); }
-.step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+.step-indicator { display: flex; gap: 5px; align-items: center; }
+
+/* Cada bolinha tem um wrapper para o tooltip */
+.step-dot-wrap {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-dot-wrap .step-tooltip {
+  position: absolute; top: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text); font-size: .7rem; font-weight: 600;
+  white-space: nowrap; padding: .25rem .6rem; border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  pointer-events: none; opacity: 0;
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 200;
+}
+.step-dot-wrap:hover .step-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.step-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--border); transition: all .25s; cursor: pointer;
+  border: 2px solid transparent;
+}
+.step-dot:hover {
+  background: var(--text-muted);
+  transform: scale(1.35);
+}
+.step-dot.done {
+  background: var(--accent2);
+}
+.step-dot.done:hover {
+  background: var(--accent2);
+  transform: scale(1.35);
+  box-shadow: 0 0 0 3px rgba(56,189,248,.2);
+}
+.step-dot.active {
+  background: var(--accent);
+  width: 26px; border-radius: 4px;
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  cursor: default;
+}
+.step-dot.active:hover { transform: none; }
 
 /* ─── LANDING PAGE ─── */
 .hero-landing {
@@ -280,7 +331,7 @@ select option { background: var(--surface2); }
 /* ─── TOGGLE BUTTONS ─── */
 .toggle-group { display: flex; gap: .6rem; flex-wrap: wrap; }
 .toggle-btn {
-  padding: .55rem 1.1rem; border-radius: 999px; border: 2px solid var(--border);
+  padding: .55rem 1.1rem; border-radius: 999px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text-muted); font-family: var(--font-body);
   font-size: .875rem; cursor: pointer; transition: all var(--t); user-select: none;
 }
@@ -498,7 +549,7 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
   .features-grid { grid-template-columns: 1fr; padding: 0 1.25rem; }
   .steps-row { grid-template-columns: 1fr 1fr; }
   .how-section { padding: 0 1.25rem; }
-  #stepIndicatorWrap { display: none !important; }
+  #stepIndicatorWrap { flex-wrap: wrap; padding: .6rem 1rem; gap: 4px; }
   .logo-text { font-size: 1.2rem; }
 }
 @media(max-width:360px){

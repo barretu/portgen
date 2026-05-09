@@ -664,15 +664,17 @@ function refreshCardLabels() {
 function showTool() {
   document.getElementById('landingPage').classList.remove('active');
   document.getElementById('toolView').classList.add('active');
-  document.getElementById('stepIndicatorWrap').style.display = 'flex';
+  const wrap = document.getElementById('stepIndicatorWrap');
+  if (wrap) wrap.style.display = 'flex';
   document.getElementById('progressBarWrap').classList.add('visible');
-  window.scrollTo({ top: 0 });
   updateProgress();
+  updateIndicator();
 }
 function showLanding() {
   document.getElementById('toolView').classList.remove('active');
   document.getElementById('landingPage').classList.add('active');
-  document.getElementById('stepIndicatorWrap').style.display = 'none';
+  const wrap = document.getElementById('stepIndicatorWrap');
+  if (wrap) wrap.style.display = 'none';
   document.getElementById('progressBarWrap').classList.remove('visible');
   window.scrollTo({ top: 0 });
 }
@@ -728,15 +730,37 @@ function goStep(n) {
 function updateIndicator() {
   const ind = document.getElementById('stepIndicator');
   if (!ind) return;
+
+  const stepNames = {
+    pt: ['Configurações','Dados pessoais','Sobre mim','Formação','Experiência','Projetos','Habilidades','Certificados','Links extras','Paleta de cores','Gerar'],
+    en: ['Settings','Personal info','About me','Education','Experience','Projects','Skills','Certificates','Extra links','Color palette','Generate'],
+    es: ['Configuración','Info personal','Sobre mí','Formación','Experiencia','Proyectos','Habilidades','Certificados','Links extra','Paleta de colores','Generar'],
+    fr: ['Paramètres','Infos perso','À propos','Formation','Expérience','Projets','Compétences','Certifications','Liens','Palette','Générer'],
+  };
+  const names = stepNames[toolLang] || stepNames.pt;
+
   ind.innerHTML = '';
   for (let i = 1; i <= STEPS; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'step-dot-wrap';
+
     const d = document.createElement('div');
     d.className = 'step-dot' + (i === currentStep ? ' active' : i < currentStep ? ' done' : '');
-    if (i < currentStep) {
-      d.title = `Step ${i}`;
+
+    // Todas as bolinhas exceto a atual são clicáveis
+    if (i !== currentStep) {
       d.addEventListener('click', () => goStep(i));
+      d.title = '';
     }
-    ind.appendChild(d);
+
+    // Tooltip com nome do step
+    const tip = document.createElement('div');
+    tip.className = 'step-tooltip';
+    tip.textContent = `${i}. ${names[i - 1] || ''}`;
+
+    wrap.appendChild(d);
+    wrap.appendChild(tip);
+    ind.appendChild(wrap);
   }
 }
 
