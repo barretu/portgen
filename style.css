@@ -39,7 +39,7 @@ body {
 /* Landing and tool view fill available space */
 #landingPage { display: none; flex: 1; flex-direction: column; }
 #landingPage.active { display: flex; }
-#toolView { display: none; flex: 1; flex-direction: column; min-height: 0; }
+#toolView { display: none; flex: 1; flex-direction: column; min-height: 0; overflow-y: auto; }
 #toolView.active { display: flex; }
 .main { flex: 1; max-width: 780px; width: 100%; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
 
@@ -280,7 +280,7 @@ select option { background: var(--surface2); }
 /* ─── TOGGLE BUTTONS ─── */
 .toggle-group { display: flex; gap: .6rem; flex-wrap: wrap; }
 .toggle-btn {
-  padding: .55rem 1.1rem; border-radius: 999px; border: 2px solid var(--border);
+  padding: .55rem 1.1rem; border-radius: 999px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text-muted); font-family: var(--font-body);
   font-size: .875rem; cursor: pointer; transition: all var(--t); user-select: none;
 }
@@ -504,15 +504,77 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
 @media(max-width:360px){
   .steps-row { grid-template-columns: 1fr; }
 }
-/* ─── REPEATER CARD RESPONSIVENESS ─── */
-.repeater-card .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
-@media(max-width:640px) {
-  .repeater-card .row-2 { grid-template-columns: 1fr; gap: .6rem; }
-  .repeater-card { padding: 1rem .9rem; }
-  .main { padding: 2rem 1rem 4rem; }
+/* ═══════════════════════════════════════════════
+   REPEATER CARDS — responsividade + drag & drop
+   ═══════════════════════════════════════════════ */
+
+/* Drag handle */
+.drag-handle {
+  position: absolute; top: 0; left: 0; bottom: 0; width: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: grab; color: var(--border); transition: color var(--t), background var(--t);
+  border-radius: var(--radius) 0 0 var(--radius);
+  border-right: 1px solid var(--border);
+}
+.drag-handle:hover { color: var(--accent); background: var(--accent-glow); }
+.drag-handle:active { cursor: grabbing; }
+.drag-handle svg { width: 14px; height: 14px; pointer-events: none; }
+
+/* Card base: abre espaço para o handle */
+.repeater-card { padding-left: 2.5rem; user-select: none; }
+.repeater-card input,
+.repeater-card textarea,
+.repeater-card select { user-select: text; }
+
+/* Estados de drag */
+.repeater-card.is-dragging {
+  opacity: .3; border-style: dashed !important;
+  box-shadow: none !important; transform: scale(.98);
+  pointer-events: none;
+}
+.repeater-card.drag-over-top {
+  border-top: 2px solid var(--accent) !important;
+  box-shadow: 0 -4px 12px rgba(37,99,168,.25) !important;
+}
+.repeater-card.drag-over-bottom {
+  border-bottom: 2px solid var(--accent) !important;
+  box-shadow: 0 4px 12px rgba(37,99,168,.25) !important;
+}
+/* Ghost element durante drag */
+.drag-ghost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  opacity: .85; transform: rotate(1.5deg) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0,0,0,.4);
+  border-radius: 12px;
+  transition: none;
 }
 
-/* ─── PHONE DDI ─── */
+/* row-2 dentro dos cards */
+.repeater-card .row-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .85rem;
+}
+
+/* ── mobile ── */
+@media(max-width: 600px) {
+  .repeater-card { padding: 1rem .9rem 1rem 2.25rem; }
+  .repeater-card .row-2 { grid-template-columns: 1fr; gap: .6rem; }
+  .main { padding: 2rem 1rem 4rem; }
+
+  /* date picker semestral */
+  .date-picker { flex-wrap: wrap; }
+  .date-picker select { flex: 1 1 calc(50% - .5rem); min-width: 100px; }
+  .date-picker .date-sep { display: none; }
+
+  /* lang picker */
+  .lang-picker-row { flex-wrap: wrap; }
+  .lang-select, .lang-level-select { flex: 1 1 calc(50% - .25rem); min-width: 110px; }
+  .lang-add-btn { width: 100%; }
+
+  /* remove-btn não sobrepõe handle no mobile */
+  .repeater-card .remove-btn { right: .5rem; top: .5rem; }
+}
+
+/* ── PHONE DDI ── */
 .phone-wrap { display: flex; position: relative; }
 .phone-ddi-btn {
   display: flex; align-items: center; gap: .35rem;
@@ -520,8 +582,7 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
   border: 1px solid var(--border); border-right: none;
   background: var(--surface); color: var(--text);
   font-family: var(--font-body); font-size: .88rem; font-weight: 600;
-  cursor: pointer; white-space: nowrap; transition: all var(--t);
-  flex-shrink: 0;
+  cursor: pointer; white-space: nowrap; transition: all var(--t); flex-shrink: 0;
 }
 .phone-ddi-btn:hover { border-color: var(--accent); color: var(--accent); }
 .ddi-dropdown {
@@ -548,63 +609,43 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
 .ddi-option:hover { background: var(--surface); }
 .ddi-option .ddi-flag { font-size: 1.1rem; flex-shrink: 0; }
 .ddi-option .ddi-name { flex: 1; font-size: .83rem; color: var(--text-muted); }
-.ddi-option .ddi-num { font-weight: 600; font-size: .83rem; color: var(--accent); flex-shrink:0; }
+.ddi-option .ddi-num { font-weight: 600; font-size: .83rem; color: var(--accent); flex-shrink: 0; }
 
-/* ─── UNIVERSITY AUTOCOMPLETE ─── */
+/* ── UNIVERSITY AUTOCOMPLETE ── */
 .univ-wrap { position: relative; }
 .univ-dropdown {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0;
   background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
   box-shadow: 0 12px 40px rgba(0,0,0,.25); z-index: 200;
-  max-height: 220px; overflow-y: auto; display: none;
-  animation: dropIn .2s ease both;
+  max-height: 220px; overflow-y: auto; display: none; animation: dropIn .2s ease both;
 }
 .univ-dropdown.open { display: block; }
-.univ-option {
-  padding: .6rem 1rem; font-size: .88rem; cursor: pointer;
-  border-bottom: 1px solid var(--border); transition: background var(--t);
-}
+.univ-option { padding: .6rem 1rem; font-size: .88rem; cursor: pointer; border-bottom: 1px solid var(--border); transition: background var(--t); }
 .univ-option:last-child { border-bottom: none; }
 .univ-option:hover { background: var(--surface); }
 .univ-option .univ-name { font-weight: 500; display: block; }
 .univ-option .univ-country { font-size: .75rem; color: var(--text-muted); display: block; }
 
-/* ─── DATE PICKER (semester/year) ─── */
-.date-picker {
-  display: flex; gap: .5rem; align-items: center; flex-wrap: wrap;
-}
-.date-picker select {
-  flex: 1; min-width: 80px;
-}
-.date-picker .date-sep {
-  color: var(--text-muted); font-size: .85rem; flex-shrink: 0;
-}
-.date-current-wrap {
-  display: flex; align-items: center; gap: .5rem; margin-top: .4rem;
-}
-.date-current-wrap input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor:pointer; }
+/* ── DATE PICKER ── */
+.date-picker { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.date-picker select { flex: 1; min-width: 80px; }
+.date-picker .date-sep { color: var(--text-muted); font-size: .85rem; flex-shrink: 0; }
+.date-current-wrap { display: flex; align-items: center; gap: .5rem; margin-top: .4rem; }
+.date-current-wrap input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
 .date-current-wrap label { font-size: .83rem; color: var(--text-muted); cursor: pointer; }
 
-/* ─── SKILL SUGGESTIONS ─── */
+/* ── SKILL SUGGESTIONS ── */
 .skill-suggestions-box {
-  position: relative; background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,.2);
-  max-height: 180px; overflow-y: auto; display: none; z-index: 200;
-  margin-top: 2px; animation: dropIn .15s ease both;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,.2); max-height: 180px; overflow-y: auto;
+  display: none; z-index: 200; margin-top: 2px; animation: dropIn .15s ease both;
 }
 .skill-suggestions-box.open { display: block; }
-.skill-sugg-item {
-  padding: .5rem 1rem; cursor: pointer; font-size: .88rem;
-  border-bottom: 1px solid var(--border); transition: background var(--t);
-}
+.skill-sugg-item { padding: .5rem 1rem; cursor: pointer; font-size: .88rem; border-bottom: 1px solid var(--border); transition: background var(--t); }
 .skill-sugg-item:last-child { border-bottom: none; }
-.skill-sugg-item:hover, .skill-sugg-item.highlighted { background: var(--surface); }
-
+.skill-sugg-item:hover { background: var(--surface); }
 .skill-chips-panel { margin-top: .75rem; }
-.chips-section-label {
-  font-size: .7rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: .08em; color: var(--text-muted); margin-bottom: .5rem;
-}
+.chips-section-label { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: .5rem; }
 .chips-row { display: flex; flex-wrap: wrap; gap: .4rem; }
 .skill-chip {
   padding: .28rem .75rem; border-radius: 999px; font-size: .8rem; font-weight: 500;
@@ -614,10 +655,8 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
 .skill-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
 .skill-chip.added { border-color: var(--accent2); color: var(--accent2); background: rgba(56,189,248,.1); cursor: default; }
 
-/* ─── LANG PICKER ─── */
-.lang-picker-row {
-  display: flex; gap: .5rem; align-items: stretch; flex-wrap: wrap;
-}
+/* ── LANG PICKER ── */
+.lang-picker-row { display: flex; gap: .5rem; align-items: stretch; flex-wrap: wrap; }
 .lang-select { flex: 2; min-width: 140px; }
 .lang-level-select { flex: 1; min-width: 120px; }
 .lang-add-btn {
@@ -628,7 +667,7 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
 }
 .lang-add-btn:hover { opacity: .88; transform: translateY(-1px); }
 
-/* ─── TECH TAGS AUTOCOMPLETE in project cards ─── */
+/* ── TECH TAGS AUTOCOMPLETE ── */
 .tech-tag-wrap { position: relative; }
 .tech-suggestions-box {
   position: absolute; top: calc(100% + 2px); left: 0; right: 0;
@@ -637,14 +676,11 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
   display: none; z-index: 250; animation: dropIn .15s ease both;
 }
 .tech-suggestions-box.open { display: block; }
-.tech-sugg-item {
-  padding: .45rem .9rem; cursor: pointer; font-size: .85rem;
-  border-bottom: 1px solid var(--border); transition: background var(--t);
-}
+.tech-sugg-item { padding: .45rem .9rem; cursor: pointer; font-size: .85rem; border-bottom: 1px solid var(--border); transition: background var(--t); }
 .tech-sugg-item:last-child { border-bottom: none; }
 .tech-sugg-item:hover { background: var(--surface); }
 
-/* ─── PROJECT CARD TECH TAGS ─── */
+/* ── PROJECT TECH PILLS ── */
 .proj-tech-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
 .proj-tech-tag {
   background: var(--accent-glow); border: 1px solid rgba(37,99,168,.35);
@@ -652,9 +688,5 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
   display: inline-flex; align-items: center; gap: .25rem;
   animation: tagPop .2s cubic-bezier(.34,1.56,.64,1) both;
 }
-.proj-tech-tag button {
-  background: none; border: none; color: var(--text-muted);
-  cursor: pointer; font-size: .65rem; line-height: 1; padding: 0;
-  transition: color var(--t);
-}
+.proj-tech-tag button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: .65rem; line-height: 1; padding: 0; transition: color var(--t); }
 .proj-tech-tag button:hover { color: #e05555; }

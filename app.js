@@ -1006,7 +1006,158 @@ function addCard(listId, templateFn) {
   const wrap = document.getElementById(listId);
   const div = document.createElement('div');
   div.innerHTML = templateFn(id);
-  wrap.appendChild(div.firstElementChild);
+  const card = div.firstElementChild;
+  // Inject drag handle
+  injectDragHandle(card);
+  wrap.appendChild(card);
+  initCardDrag(card);
+}
+
+// ════════════════════════════════════════════════════════
+// DRAG & DROP — Repeater cards
+// ════════════════════════════════════════════════════════
+const DRAG_HANDLE_SVG = `<svg viewBox="0 0 14 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="4" cy="4"  r="1.6" fill="currentColor"/>
+  <circle cx="10" cy="4"  r="1.6" fill="currentColor"/>
+  <circle cx="4" cy="11" r="1.6" fill="currentColor"/>
+  <circle cx="10" cy="11" r="1.6" fill="currentColor"/>
+  <circle cx="4" cy="18" r="1.6" fill="currentColor"/>
+  <circle cx="10" cy="18" r="1.6" fill="currentColor"/>
+</svg>`;
+
+function injectDragHandle(card) {
+  if (card.querySelector('.drag-handle')) return;
+  const handle = document.createElement('div');
+  handle.className = 'drag-handle';
+  handle.title = 'Arrastar para reordenar';
+  handle.innerHTML = DRAG_HANDLE_SVG;
+  card.prepend(handle);
+}
+
+let dragSrc = null;
+let ghost   = null;
+let ghostOffX = 0, ghostOffY = 0;
+
+function initCardDrag(card) {
+  const handle = card.querySelector('.drag-handle');
+  if (!handle) return;
+
+  handle.addEventListener('mousedown', onDragStart);
+  handle.addEventListener('touchstart', onDragStart, { passive: false });
+}
+
+function getCardsInList(card) {
+  return Array.from(card.parentElement.querySelectorAll(':scope > .repeater-card'));
+}
+
+function clearDropIndicators() {
+  document.querySelectorAll('.repeater-card').forEach(c => {
+    c.classList.remove('drag-over-top', 'drag-over-bottom');
+  });
+}
+
+function onDragStart(e) {
+  e.preventDefault();
+  const handle = e.currentTarget;
+  const card = handle.closest('.repeater-card');
+  if (!card) return;
+
+  dragSrc = card;
+  const rect = card.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  ghostOffX = clientX - rect.left;
+  ghostOffY = clientY - rect.top;
+
+  // Create ghost clone
+  ghost = card.cloneNode(true);
+  ghost.classList.add('drag-ghost');
+  ghost.style.width  = rect.width  + 'px';
+  ghost.style.left   = (clientX - ghostOffX) + 'px';
+  ghost.style.top    = (clientY - ghostOffY) + 'px';
+  // Apply current theme vars inline for ghost
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#1a2030';
+  const border = getComputedStyle(document.documentElement).getPropertyValue('--border') || '#2a3448';
+  ghost.style.background = bg;
+  ghost.style.border = '1px solid ' + border;
+  document.body.appendChild(ghost);
+
+  card.classList.add('is-dragging');
+
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('mouseup',   onDragEnd);
+  document.addEventListener('touchmove', onDragMove, { passive: false });
+  document.addEventListener('touchend',  onDragEnd);
+}
+
+function onDragMove(e) {
+  if (!dragSrc || !ghost) return;
+  e.preventDefault();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+  ghost.style.left = (clientX - ghostOffX) + 'px';
+  ghost.style.top  = (clientY - ghostOffY) + 'px';
+
+  // Determine target card
+  clearDropIndicators();
+  const siblings = getCardsInList(dragSrc);
+  for (const sibling of siblings) {
+    if (sibling === dragSrc) continue;
+    const r = sibling.getBoundingClientRect();
+    if (clientY >= r.top && clientY <= r.bottom) {
+      const midY = r.top + r.height / 2;
+      sibling.classList.add(clientY < midY ? 'drag-over-top' : 'drag-over-bottom');
+      break;
+    }
+  }
+}
+
+function onDragEnd(e) {
+  document.removeEventListener('mousemove', onDragMove);
+  document.removeEventListener('mouseup',   onDragEnd);
+  document.removeEventListener('touchmove', onDragMove);
+  document.removeEventListener('touchend',  onDragEnd);
+
+  if (!dragSrc) return;
+  const clientX = e.touches ? e.changedTouches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.changedTouches[0].clientY : e.clientY;
+
+  // Find drop target
+  const siblings = getCardsInList(dragSrc);
+  let target = null, insertBefore = true;
+  for (const sibling of siblings) {
+    if (sibling === dragSrc) continue;
+    const r = sibling.getBoundingClientRect();
+    if (clientY >= r.top && clientY <= r.bottom) {
+      target = sibling;
+      insertBefore = clientY < (r.top + r.height / 2);
+      break;
+    }
+  }
+
+  // Perform reorder
+  if (target) {
+    const parent = dragSrc.parentElement;
+    if (insertBefore) {
+      parent.insertBefore(dragSrc, target);
+    } else {
+      parent.insertBefore(dragSrc, target.nextSibling);
+    }
+    // Pulse animation to confirm
+    dragSrc.style.animation = 'none';
+    requestAnimationFrame(() => {
+      dragSrc.style.animation = '';
+      dragSrc.style.boxShadow = '0 0 0 2px var(--accent)';
+      setTimeout(() => { if (dragSrc) dragSrc.style.boxShadow = ''; }, 600);
+    });
+  }
+
+  // Cleanup
+  clearDropIndicators();
+  dragSrc.classList.remove('is-dragging');
+  if (ghost) { ghost.remove(); ghost = null; }
+  dragSrc = null;
 }
 function removeCard(cardId) {
   const el = document.getElementById(cardId);
