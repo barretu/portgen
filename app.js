@@ -421,6 +421,15 @@ function applyLandingI18n() {
       cta1: '✨ Criar meu portfólio', cta2: '📖 Como publicar meu portfólio',
       howTitle: 'Como funciona', howSub: 'Em apenas 4 passos você tem um portfólio pronto para publicar',
       steps: [['Configure','Escolha o layout, tema, idiomas e paleta de cores do seu portfólio.'],['Preencha','Adicione suas experiências, projetos, habilidades e certificados.'],['Gere','Clique em gerar e seu portfólio abre em uma nova aba, pronto para uso.'],['Publique','Salve o arquivo HTML e hospede gratuitamente no GitHub Pages ou Vercel.']],
+      features: [
+        ['🎨','Design personalizado','Escolha sua paleta de cores com um seletor de harmonia cromática e veja o resultado em tempo real.'],
+        ['🌐','Multilíngue','Gere seu portfólio em Português, Inglês, Espanhol e Francês — tudo em um único arquivo HTML.'],
+        ['📄','Currículo incluso','Além do portfólio, o PortGen gera um currículo limpo e otimizado para ATS, pronto para PDF.'],
+        ['🔒','Privacidade total','Tudo acontece no seu navegador. Seus dados nunca saem do seu dispositivo.'],
+        ['📱','Responsivo','O portfólio gerado funciona em qualquer tela — desktop, tablet ou celular.'],
+        ['⚡','Sem código','Basta preencher o formulário. O PortGen cuida de todo o HTML, CSS e JavaScript por você.'],
+      ],
+      langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],
     },
     en: {
       badge: 'Free tool · 100% in your browser',
@@ -429,6 +438,15 @@ function applyLandingI18n() {
       cta1: '✨ Create my portfolio', cta2: '📖 How to publish my portfolio',
       howTitle: 'How it works', howSub: 'In just 4 steps you have a portfolio ready to publish',
       steps: [['Configure','Choose the layout, theme, languages and color palette for your portfolio.'],['Fill in','Add your experiences, projects, skills and certificates.'],['Generate','Click generate and your portfolio opens in a new tab, ready to use.'],['Publish','Save the HTML file and host it for free on GitHub Pages or Vercel.']],
+      features: [
+        ['🎨','Custom design','Choose your color palette with a chromatic harmony selector and see the result in real time.'],
+        ['🌐','Multilingual','Generate your portfolio in Portuguese, English, Spanish and French — all in a single HTML file.'],
+        ['📄','Resume included','In addition to the portfolio, PortGen generates a clean, ATS-optimised resume ready for PDF.'],
+        ['🔒','Full privacy','Everything happens in your browser. Your data never leaves your device.'],
+        ['📱','Responsive','The generated portfolio works on any screen — desktop, tablet or mobile.'],
+        ['⚡','No code','Just fill in the form. PortGen handles all the HTML, CSS and JavaScript for you.'],
+      ],
+      langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],
     },
     es: {
       badge: 'Herramienta gratuita · 100% en el navegador',
@@ -437,6 +455,15 @@ function applyLandingI18n() {
       cta1: '✨ Crear mi portafolio', cta2: '📖 Cómo publicar mi portafolio',
       howTitle: 'Cómo funciona', howSub: 'En solo 4 pasos tienes un portafolio listo para publicar',
       steps: [['Configura','Elige el diseño, tema, idiomas y paleta de colores de tu portafolio.'],['Rellena','Agrega tus experiencias, proyectos, habilidades y certificados.'],['Genera','Haz clic en generar y tu portafolio se abre en una nueva pestaña.'],['Publica','Guarda el archivo HTML y alójalo gratis en GitHub Pages o Vercel.']],
+      features: [
+        ['🎨','Diseño personalizado','Elige tu paleta de colores con un selector de armonía cromática y ve el resultado en tiempo real.'],
+        ['🌐','Multilingüe','Genera tu portafolio en Portugués, Inglés, Español y Francés — todo en un único archivo HTML.'],
+        ['📄','Currículum incluido','Además del portafolio, PortGen genera un currículum limpio y optimizado para ATS, listo en PDF.'],
+        ['🔒','Privacidad total','Todo ocurre en tu navegador. Tus datos nunca salen de tu dispositivo.'],
+        ['📱','Responsivo','El portafolio generado funciona en cualquier pantalla — escritorio, tablet o móvil.'],
+        ['⚡','Sin código','Solo rellena el formulario. PortGen se encarga de todo el HTML, CSS y JavaScript por ti.'],
+      ],
+      langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],
     },
     fr: {
       badge: 'Outil gratuit · 100% dans le navigateur',
@@ -445,6 +472,15 @@ function applyLandingI18n() {
       cta1: '✨ Créer mon portfolio', cta2: '📖 Comment publier mon portfolio',
       howTitle: 'Comment ça marche', howSub: 'En seulement 4 étapes, vous avez un portfolio prêt à publier',
       steps: [['Configurez','Choisissez la mise en page, le thème, les langues et la palette de couleurs.'],['Remplissez','Ajoutez vos expériences, projets, compétences et certifications.'],['Générez','Cliquez sur générer et votre portfolio s\'ouvre dans un nouvel onglet.'],['Publiez','Enregistrez le fichier HTML et hébergez-le gratuitement sur GitHub Pages ou Vercel.']],
+      features: [
+        ['🎨','Design personnalisé','Choisissez votre palette de couleurs avec un sélecteur d\'harmonie chromatique et voyez le résultat en temps réel.'],
+        ['🌐','Multilingue','Générez votre portfolio en Portugais, Anglais, Espagnol et Français — tout dans un seul fichier HTML.'],
+        ['📄','CV inclus','En plus du portfolio, PortGen génère un CV épuré et optimisé ATS, prêt pour le PDF.'],
+        ['🔒','Confidentialité totale','Tout se passe dans votre navigateur. Vos données ne quittent jamais votre appareil.'],
+        ['📱','Responsive','Le portfolio généré fonctionne sur n\'importe quel écran — bureau, tablette ou mobile.'],
+        ['⚡','Sans code','Il suffit de remplir le formulaire. PortGen s\'occupe de tout le HTML, CSS et JavaScript pour vous.'],
+      ],
+      langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],
     },
   };
   const li = landingI18n[toolLang] || landingI18n.pt;
@@ -486,6 +522,33 @@ function applyLandingI18n() {
       if (p)  p.textContent  = s[1];
     }
   });
+
+  // Feature cards
+  const featureCards = document.querySelectorAll('.feature-card');
+  if (li.features) {
+    li.features.forEach((f, i) => {
+      if (!featureCards[i]) return;
+      const icon = featureCards[i].querySelector('.feature-icon');
+      const h3   = featureCards[i].querySelector('h3');
+      const p    = featureCards[i].querySelector('p');
+      if (icon) icon.textContent = f[0];
+      if (h3)   h3.textContent   = f[1];
+      if (p)    p.textContent    = f[2];
+    });
+  }
+
+  // Language toggle buttons in step 1 (🇧🇷 Português, 🇺🇸 English…)
+  if (li.langBtns) {
+    const langToggles = document.querySelectorAll('.toggle-group .toggle-btn[data-value], .toggle-group .toggle-btn[style]');
+    // The lang row is the one inside the field that has the PT button (no data-value / style cursor:default)
+    const langRow = document.querySelector('.field #langLabel')?.closest('.field')?.querySelector('.toggle-group');
+    if (langRow) {
+      const btns = langRow.querySelectorAll('.toggle-btn');
+      btns.forEach((btn, i) => {
+        if (li.langBtns[i]) btn.textContent = li.langBtns[i];
+      });
+    }
+  }
 }
 
 function applyToolI18n() {
@@ -508,9 +571,9 @@ function applyToolI18n() {
   setEl('#themeLabel',         T.theme_label);
   setEl('#langLabel',          T.lang_label);
   setEl('#langHint',           T.lang_hint);
-  setBtn('theme-dark',  T.theme_dark);
-  setBtn('theme-light', T.theme_light);
-  setBtn('theme-both',  T.theme_both);
+  setBtn('dark',  T.theme_dark);
+  setBtn('light', T.theme_light);
+  setBtn('both',  T.theme_both);
 
   // Step 2
   setLabel('fullName',      T.fullname,  T.required); setPH('fullName',      T.fullname_ph);
@@ -585,7 +648,7 @@ function setLabel(inputId, labelText, req, opt) {
   }
 }
 function setBtn(dataValue, text) {
-  const btn = document.querySelector(`.toggle-btn[data-value="${dataValue}"]`);
+  const btn = document.querySelector(`.toggle-btn[data-target="theme"][data-value="${dataValue}"]`);
   if (btn) btn.textContent = text;
 }
 
@@ -1041,7 +1104,6 @@ let ghostOffX = 0, ghostOffY = 0;
 function initCardDrag(card) {
   const handle = card.querySelector('.drag-handle');
   if (!handle) return;
-
   handle.addEventListener('mousedown', onDragStart);
   handle.addEventListener('touchstart', onDragStart, { passive: false });
 }
@@ -1069,15 +1131,13 @@ function onDragStart(e) {
   ghostOffX = clientX - rect.left;
   ghostOffY = clientY - rect.top;
 
-  // Create ghost clone
   ghost = card.cloneNode(true);
   ghost.classList.add('drag-ghost');
   ghost.style.width  = rect.width  + 'px';
   ghost.style.left   = (clientX - ghostOffX) + 'px';
   ghost.style.top    = (clientY - ghostOffY) + 'px';
-  // Apply current theme vars inline for ghost
-  const bg = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#1a2030';
-  const border = getComputedStyle(document.documentElement).getPropertyValue('--border') || '#2a3448';
+  const bg     = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#1a2030';
+  const border = getComputedStyle(document.documentElement).getPropertyValue('--border')  || '#2a3448';
   ghost.style.background = bg;
   ghost.style.border = '1px solid ' + border;
   document.body.appendChild(ghost);
@@ -1099,7 +1159,6 @@ function onDragMove(e) {
   ghost.style.left = (clientX - ghostOffX) + 'px';
   ghost.style.top  = (clientY - ghostOffY) + 'px';
 
-  // Determine target card
   clearDropIndicators();
   const siblings = getCardsInList(dragSrc);
   for (const sibling of siblings) {
@@ -1120,10 +1179,8 @@ function onDragEnd(e) {
   document.removeEventListener('touchend',  onDragEnd);
 
   if (!dragSrc) return;
-  const clientX = e.touches ? e.changedTouches[0].clientX : e.clientX;
   const clientY = e.touches ? e.changedTouches[0].clientY : e.clientY;
 
-  // Find drop target
   const siblings = getCardsInList(dragSrc);
   let target = null, insertBefore = true;
   for (const sibling of siblings) {
@@ -1136,15 +1193,10 @@ function onDragEnd(e) {
     }
   }
 
-  // Perform reorder
   if (target) {
     const parent = dragSrc.parentElement;
-    if (insertBefore) {
-      parent.insertBefore(dragSrc, target);
-    } else {
-      parent.insertBefore(dragSrc, target.nextSibling);
-    }
-    // Pulse animation to confirm
+    if (insertBefore) parent.insertBefore(dragSrc, target);
+    else parent.insertBefore(dragSrc, target.nextSibling);
     dragSrc.style.animation = 'none';
     requestAnimationFrame(() => {
       dragSrc.style.animation = '';
@@ -1153,7 +1205,6 @@ function onDragEnd(e) {
     });
   }
 
-  // Cleanup
   clearDropIndicators();
   dragSrc.classList.remove('is-dragging');
   if (ghost) { ghost.remove(); ghost = null; }
