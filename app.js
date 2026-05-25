@@ -92,6 +92,8 @@ const TOOL_I18N = {
     exp_types: ['CLT','PJ','Freelance','Estágio','Voluntário'],
     // Optional
     optional: 'opcional', required: '*',
+    period_start_ph: 'Início...', period_end_ph: 'Término...',
+    edu_current: 'Em andamento', exp_current: 'Atual (ainda trabalho aqui)',
     // toast
     toast_gen: '✨ Gerando seu portfólio...',
   },
@@ -172,6 +174,8 @@ const TOOL_I18N = {
     degrees: ['Bachelor','Technical','Post-graduation','MBA','Master\'s','PhD','Bootcamp','Short course'],
     exp_types: ['Full-time','Freelance','Contract','Internship','Volunteer'],
     optional: 'optional', required: '*',
+    period_start_ph: 'Start...', period_end_ph: 'End...',
+    edu_current: 'In progress', exp_current: 'Current (still working here)',
     toast_gen: '✨ Generating your portfolio...',
   },
   es: {
@@ -251,6 +255,8 @@ const TOOL_I18N = {
     degrees: ['Licenciatura','Técnico','Postgrado','MBA','Maestría','Doctorado','Bootcamp','Curso libre'],
     exp_types: ['Tiempo completo','Freelance','Contrato','Prácticas','Voluntario'],
     optional: 'opcional', required: '*',
+    period_start_ph: 'Inicio...', period_end_ph: 'Fin...',
+    edu_current: 'En curso', exp_current: 'Actual (aún trabajo aquí)',
     toast_gen: '✨ Generando tu portafolio...',
   },
   fr: {
@@ -330,6 +336,8 @@ const TOOL_I18N = {
     degrees: ['Licence','BTS/IUT','Master','MBA','Master recherche','Doctorat','Bootcamp','Formation courte'],
     exp_types: ['CDI','Freelance','CDD','Stage','Bénévole'],
     optional: 'optionnel', required: '*',
+    period_start_ph: 'Début...', period_end_ph: 'Fin...',
+    edu_current: 'En cours', exp_current: "Actuel (j'y travaille encore)",
     toast_gen: '✨ Génération de votre portfolio...',
   }
 };
@@ -988,13 +996,13 @@ function educationCard(id) {
       <div class="field">
         <label>${T.period}</label>
         <div class="date-picker">
-          <select data-field="periodStart"><option value="">Início...</option>${semOpts}</select>
+          <select data-field="periodStart"><option value="">${T.period_start_ph}</option>${semOpts}</select>
           <span class="date-sep">→</span>
-          <select data-field="periodEnd"><option value="">Término...</option>${semOpts}</select>
+          <select data-field="periodEnd"><option value="">${T.period_end_ph}</option>${semOpts}</select>
         </div>
         <div class="date-current-wrap">
           <input type="checkbox" id="eduCurrent-${id}" data-field="periodCurrent" onchange="toggleEduCurrent(this,'edu-${id}')">
-          <label for="eduCurrent-${id}">Em andamento</label>
+          <label for="eduCurrent-${id}">${T.edu_current}</label>
         </div>
       </div>
     </div>
@@ -1021,13 +1029,13 @@ function expCard(id) {
       <div class="field">
         <label>${T.period}</label>
         <div class="date-picker">
-          <select data-field="periodStart"><option value="">Início...</option>${semOpts}</select>
+          <select data-field="periodStart"><option value="">${T.period_start_ph}</option>${semOpts}</select>
           <span class="date-sep">→</span>
-          <select data-field="periodEnd"><option value="">Término...</option>${semOpts}</select>
+          <select data-field="periodEnd"><option value="">${T.period_end_ph}</option>${semOpts}</select>
         </div>
         <div class="date-current-wrap">
           <input type="checkbox" id="expCurrent-${id}" data-field="periodCurrent" onchange="toggleExpCurrent(this,'exp-${id}')">
-          <label for="expCurrent-${id}">Atual (ainda trabalho aqui)</label>
+          <label for="expCurrent-${id}">${T.exp_current}</label>
         </div>
       </div>
       <div class="field"><label>${T.type}</label><select data-field="type">${T.exp_types.map(t=>`<option>${t}</option>`).join('')}</select></div>
