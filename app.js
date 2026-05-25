@@ -95,6 +95,7 @@ const TOOL_I18N = {
     period_start_ph: 'Início...', period_end_ph: 'Término...',
     edu_current: 'Em andamento', exp_current: 'Atual (ainda trabalho aqui)',
     // toast
+    photo_error: 'Arquivo inválido. Use JPG ou PNG.',
     toast_gen: '✨ Gerando seu portfólio...',
   },
   en: {
@@ -176,6 +177,7 @@ const TOOL_I18N = {
     optional: 'optional', required: '*',
     period_start_ph: 'Start...', period_end_ph: 'End...',
     edu_current: 'In progress', exp_current: 'Current (still working here)',
+    photo_error: 'Invalid file. Please use JPG or PNG.',
     toast_gen: '✨ Generating your portfolio...',
   },
   es: {
@@ -257,6 +259,7 @@ const TOOL_I18N = {
     optional: 'opcional', required: '*',
     period_start_ph: 'Inicio...', period_end_ph: 'Fin...',
     edu_current: 'En curso', exp_current: 'Actual (aún trabajo aquí)',
+    photo_error: 'Archivo inválido. Usa JPG o PNG.',
     toast_gen: '✨ Generando tu portafolio...',
   },
   fr: {
@@ -338,6 +341,7 @@ const TOOL_I18N = {
     optional: 'optionnel', required: '*',
     period_start_ph: 'Début...', period_end_ph: 'Fin...',
     edu_current: 'En cours', exp_current: "Actuel (j'y travaille encore)",
+    photo_error: 'Fichier invalide. Utilisez JPG ou PNG.',
     toast_gen: '✨ Génération de votre portfolio...',
   }
 };
@@ -821,7 +825,7 @@ function handlePhoto(e) {
   loadPhotoFile(file);
 }
 function loadPhotoFile(file) {
-  if (!file.type.startsWith('image/')) { showToast('Arquivo inválido. Use JPG ou PNG.', 'error'); return; }
+  if (!file.type.startsWith('image/')) { showToast(T.photo_error, 'error'); return; }
   const reader = new FileReader();
   reader.onload = ev => {
     state.photo = ev.target.result;
@@ -1584,7 +1588,8 @@ function buildPortfolioHTML(d) {
     return pt + '\n' + extraLangs.map(lang => sW(id, buildFn(i18nAll[lang] || t), lang)).join('\n');
   }
 
-  const aboutContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.about}</h2><div class="about-grid">${d.photo?`<div class="about-photo-wrap"><img src="${d.photo}" class="about-photo" alt="${d.fullName}" /></div>`:''}<div class="about-text"><p>${d.about}</p>${d.location?`<div class="about-meta">📍 ${d.location}</div>`:''}</div></div></div>`;
+  const aboutHtml = d.about ? d.about.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') : '';
+  const aboutContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.about}</h2><div class="about-grid">${d.photo?`<div class="about-photo-wrap"><img src="${d.photo}" class="about-photo" alt="${d.fullName}" /></div>`:''}<div class="about-text"><p>${aboutHtml}</p>${d.location?`<div class="about-meta">📍 ${d.location}</div>`:''}</div></div></div>`;
   const educationContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.education}</h2><div class="timeline">${d.education.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.course||''}</div><div class="tl-sub">${e.institution||''} · ${e.degree||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
   const experienceContent= tl => `<div class="section-inner"><h2 class="sec-title">${tl.experience}</h2><div class="timeline">${d.experience.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.role||''}</div><div class="tl-sub">${e.company||''} · ${e.type||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
   const projectsContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.projects}</h2><div class="projects-grid">${d.projects.map(p=>`<div class="project-card"><div class="project-name">${p.name||''}</div><div class="project-tech-tags">${(p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('')}</div><p class="project-desc">${p.description||''}</p><div class="project-links">${p.repo?`<a href="${p.repo}" target="_blank" class="plink">${tl.viewRepo} ↗</a>`:''} ${p.live?`<a href="${p.live}" target="_blank" class="plink">${tl.viewProject} ↗</a>`:''}</div></div>`).join('')}</div></div>`;
