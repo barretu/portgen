@@ -64,7 +64,7 @@ const TOOL_I18N = {
     proj_tech: 'Tecnologias usadas', proj_tech_ph: 'Ex: React, Node.js, PostgreSQL',
     proj_desc_ph: 'O que é o projeto, qual problema resolve e qual foi o seu papel?',
     proj_repo: 'Link do repositório', proj_repo_ph: 'https://github.com/usuario/repositorio',
-    proj_live: 'Link ao vivo', proj_live_ph: 'https://meu-projeto.vercel.app',
+    proj_live: 'Link do projeto', proj_live_ph: 'https://meu-projeto.vercel.app',
     add_proj: '+ Adicionar projeto',
     // Skills
     tech_skills: 'Habilidades técnicas', tech_ph: 'Ex: JavaScript, React, Python...',
@@ -231,7 +231,7 @@ const TOOL_I18N = {
     proj_tech: 'Tecnologías usadas', proj_tech_ph: 'Ej: React, Node.js, PostgreSQL',
     proj_desc_ph: '¿Qué es el proyecto y cuál fue tu rol?',
     proj_repo: 'Enlace del repositorio', proj_repo_ph: 'https://github.com/usuario/repo',
-    proj_live: 'Enlace en vivo', proj_live_ph: 'https://mi-proyecto.vercel.app',
+    proj_live: 'Enlace del proyecto', proj_live_ph: 'https://mi-proyecto.vercel.app',
     add_proj: '+ Agregar proyecto',
     tech_skills: 'Habilidades técnicas', tech_ph: 'Ej: JavaScript, React, Python...',
     soft_skills: 'Habilidades blandas', soft_ph: 'Ej: Liderazgo, Comunicación...',
@@ -310,7 +310,7 @@ const TOOL_I18N = {
     proj_tech: 'Technologies utilisées', proj_tech_ph: 'Ex : React, Node.js, PostgreSQL',
     proj_desc_ph: 'Qu\'est-ce que le projet et quel a été votre rôle ?',
     proj_repo: 'Lien du dépôt', proj_repo_ph: 'https://github.com/utilisateur/repo',
-    proj_live: 'Lien en direct', proj_live_ph: 'https://mon-projet.vercel.app',
+    proj_live: 'Lien du projet', proj_live_ph: 'https://mon-projet.vercel.app',
     add_proj: '+ Ajouter un projet',
     tech_skills: 'Compétences techniques', tech_ph: 'Ex : JavaScript, React, Python...',
     soft_skills: 'Compétences douces', soft_ph: 'Ex : Leadership, Communication...',
@@ -1067,7 +1067,10 @@ function projectCard(id) {
       <input type="hidden" data-field="tech" id="projTechHidden-${id}" />
     </div>
     <div class="field"><label>${T.desc_optional}</label><textarea rows="2" placeholder="${T.proj_desc_ph}" data-field="description"></textarea></div>
-    <div class="field"><label>Link do projeto <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="https://meu-projeto.vercel.app" data-field="live" /></div>
+    <div class="row-2">
+      <div class="field"><label>${T.proj_repo} <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="${T.proj_repo_ph}" data-field="repo" /></div>
+      <div class="field"><label>${T.proj_live} <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="${T.proj_live_ph}" data-field="live" /></div>
+    </div>
   </div>`;
 }
 
@@ -1504,7 +1507,7 @@ function generatePortfolio() {
       about:        document.getElementById('about').value,
       education:    collectCards('educationList', ['institution','course','degree','period','description']),
       experience:   collectCards('expList',       ['company','role','period','type','description']),
-      projects:     collectCards('projectList',   ['name','tech','description','live']),
+      projects:     collectCards('projectList',   ['name','tech','description','repo','live']),
       certificates: collectCards('certList',      ['name','issuer','date','credentialId','link']),
       techSkills:   [...tagStores.techTags],
       softSkills:   [...tagStores.softTags],
@@ -1570,7 +1573,7 @@ function buildPortfolioHTML(d) {
   const aboutContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.about}</h2><div class="about-grid">${d.photo?`<div class="about-photo-wrap"><img src="${d.photo}" class="about-photo" alt="${d.fullName}" /></div>`:''}<div class="about-text"><p>${d.about}</p>${d.location?`<div class="about-meta">📍 ${d.location}</div>`:''}</div></div></div>`;
   const educationContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.education}</h2><div class="timeline">${d.education.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.course||''}</div><div class="tl-sub">${e.institution||''} · ${e.degree||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
   const experienceContent= tl => `<div class="section-inner"><h2 class="sec-title">${tl.experience}</h2><div class="timeline">${d.experience.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.role||''}</div><div class="tl-sub">${e.company||''} · ${e.type||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
-  const projectsContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.projects}</h2><div class="projects-grid">${d.projects.map(p=>`<div class="project-card"><div class="project-name">${p.name||''}</div><div class="project-tech-tags">${(p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('')}</div><p class="project-desc">${p.description||''}</p><div class="project-links">${p.live?`<a href="${p.live}" target="_blank" class="plink">${tl.viewProject} ↗</a>`:''}</div></div>`).join('')}</div></div>`;
+  const projectsContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.projects}</h2><div class="projects-grid">${d.projects.map(p=>`<div class="project-card"><div class="project-name">${p.name||''}</div><div class="project-tech-tags">${(p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('')}</div><p class="project-desc">${p.description||''}</p><div class="project-links">${p.repo?`<a href="${p.repo}" target="_blank" class="plink">${tl.viewRepo} ↗</a>`:''} ${p.live?`<a href="${p.live}" target="_blank" class="plink">${tl.viewProject} ↗</a>`:''}</div></div>`).join('')}</div></div>`;
   const skillsContent   = tl => `<div class="section-inner"><h2 class="sec-title">${tl.skills}</h2>${d.techSkills.length?`<div class="skills-group"><h3>${tl.techSkills}</h3><div class="skills-tags">${d.techSkills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div></div>`:''} ${d.softSkills.length?`<div class="skills-group"><h3>${tl.softSkills}</h3><div class="skills-tags">${d.softSkills.map(s=>`<span class="skill-tag skill-soft">${s}</span>`).join('')}</div></div>`:''} ${d.langSkills.length?`<div class="skills-group"><h3>${tl.languages}</h3><div class="skills-tags">${d.langSkills.map(s=>`<span class="skill-tag skill-lang">${s}</span>`).join('')}</div></div>`:''}</div>`;
   const certsContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.certificates}</h2><div class="certs-grid">${d.certificates.map(c=>`<div class="cert-card"><div class="cert-icon">🎓</div><div class="cert-name">${c.name||''}</div><div class="cert-issuer">${tl.issuedBy}: ${c.issuer||''}</div><div class="cert-date">${c.date||''}</div>${c.credentialId?`<div class="cert-credential">ID: ${c.credentialId}</div>`:''} ${c.link?`<a href="${c.link}" target="_blank" class="cert-link">${tl.viewCert} ↗</a>`:''}</div>`).join('')}</div></div>`;
   const contactContent  = tl => `<div class="section-inner"><h2 class="sec-title">${tl.contact}</h2><div class="contact-grid">${d.email?`<a href="mailto:${d.email}" class="contact-card"><span class="contact-icon contact-email-icon">✉</span><span>${d.email}</span></a>`:''} ${d.phone?`<a href="tel:${d.phone}" class="contact-card"><span class="contact-icon">📞</span><span>${d.phone}</span></a>`:''} ${d.linkedin?`<a href="${d.linkedin}" target="_blank" class="contact-card contact-linkedin"><span class="contact-icon contact-li-icon">in</span><span>LinkedIn</span></a>`:''} ${d.github?`<a href="${d.github}" target="_blank" class="contact-card contact-github"><span class="contact-icon contact-gh-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></span><span>GitHub</span></a>`:''} ${d.website?`<a href="${d.website}" target="_blank" class="contact-card"><span class="contact-icon">🌐</span><span>Website</span></a>`:''} ${d.behance?`<a href="${d.behance}" target="_blank" class="contact-card"><span class="contact-icon">🎨</span><span>Behance</span></a>`:''} ${d.dribbble?`<a href="${d.dribbble}" target="_blank" class="contact-card"><span class="contact-icon">🏀</span><span>Dribbble</span></a>`:''} ${d.youtube?`<a href="${d.youtube}" target="_blank" class="contact-card"><span class="contact-icon">▶</span><span>YouTube</span></a>`:''} ${d.extraLink?`<a href="${d.extraLink}" target="_blank" class="contact-card"><span class="contact-icon">🔗</span><span>${d.extraLinkLabel||'Link'}</span></a>`:''}</div><div style="text-align:center;margin-top:2.5rem"><button class="resume-btn" onclick="openResume()">${tl.downloadResume}</button></div></div>`;
