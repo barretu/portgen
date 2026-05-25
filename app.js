@@ -415,6 +415,222 @@ const state = {
   location: '',
 };
 
+
+// ════════════════════════════════════════════════════════
+// DRAFT — save/restore form data via localStorage
+// ════════════════════════════════════════════════════════
+const DRAFT_KEY = 'portgen-draft';
+let autosaveTimer = null;
+
+function scheduleSave() {
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(saveDraft, 800);
+}
+
+function saveDraft() {
+  try {
+    const fields = ['fullName','jobTitle','email','phone','linkedin','github','locationInput','website','about','behance','dribbble','youtube','extraLink','extraLinkLabel'];
+    const fieldData = {};
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) fieldData[id] = el.value;
+    });
+
+    // Collect cards as raw field values
+    function serializeCards(listId, fields) {
+      return Array.from(document.querySelectorAll(`#${listId} .repeater-card`)).map(card => {
+        const obj = {};
+        fields.forEach(f => {
+          if (f === 'period') {
+            obj.periodStart = card.querySelector('[data-field="periodStart"]')?.value || '';
+            obj.periodEnd   = card.querySelector('[data-field="periodEnd"]')?.value   || '';
+            obj.periodCurrent = card.querySelector('[data-field="periodCurrent"]')?.checked || false;
+          } else if (f === 'tech') {
+            obj.tech = card.querySelector('[data-field="tech"]')?.value || '';
+          } else {
+            obj[f] = card.querySelector(`[data-field="${f}"]`)?.value || '';
+          }
+        });
+        return obj;
+      });
+    }
+
+    const draft = {
+      v: 1,
+      fields: fieldData,
+      state: { ...state },
+      tagStores: { ...tagStores },
+      projTechStores: { ...projTechStores },
+      selectedDdiCode: selectedDdi ? selectedDdi.code : '+55',
+      selectedHue,
+      selectedHarmony,
+      toolLang,
+      education:    serializeCards('educationList', ['institution','course','degree','period','description']),
+      experience:   serializeCards('expList',       ['company','role','period','type','description']),
+      projects:     serializeCards('projectList',   ['name','tech','description','repo','live']),
+      certificates: serializeCards('certList',      ['name','issuer','date','credentialId','link']),
+      photo: state.photo || null,
+    };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch(e) { console.warn('PortGen: could not save draft', e); }
+}
+
+function hasDraft() {
+  try { return !!localStorage.getItem(DRAFT_KEY); } catch { return false; }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch {}
+  const banner = document.getElementById('draftBanner');
+  if (banner) banner.remove();
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return false;
+    const draft = JSON.parse(raw);
+    if (!draft || draft.v !== 1) return false;
+
+    // Restore simple fields
+    const fields = draft.fields || {};
+    Object.entries(fields).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+
+    // Restore state
+    if (draft.state) Object.assign(state, draft.state);
+
+    // Restore tag stores
+    if (draft.tagStores) {
+      Object.assign(tagStores, draft.tagStores);
+      ['techTags','softTags'].forEach(k => renderTags(k));
+      renderLangTags();
+    }
+
+    // Restore tool language
+    if (draft.toolLang && TOOL_I18N[draft.toolLang]) {
+      const opt = document.querySelector(`.tool-lang-opt[data-lang="${draft.toolLang}"]`);
+      if (opt) setToolLang(opt);
+    }
+
+    // Restore hue & harmony
+    if (draft.selectedHue !== undefined) { selectedHue = draft.selectedHue; state.hue = selectedHue; }
+    if (draft.selectedHarmony)           { selectedHarmony = draft.selectedHarmony; state.harmony = selectedHarmony; }
+
+    // Restore DDI
+    if (draft.selectedDdiCode) {
+      const ddi = DDI_LIST.find(d => d.code === draft.selectedDdiCode);
+      if (ddi) selectDdi(ddi);
+    }
+
+    // Restore photo
+    if (draft.photo) {
+      state.photo = draft.photo;
+      const prev = document.getElementById('photoPreview');
+      if (prev) { prev.src = draft.photo; prev.style.display = 'block'; }
+      const icon = document.getElementById('photoIcon');
+      if (icon) icon.style.display = 'none';
+      const txt = document.getElementById('photoText');
+      if (txt) txt.textContent = T.photo_loaded;
+    }
+
+    // Restore location display
+    if (fields.locationInput) state.location = fields.locationInput;
+
+    // Restore toggle buttons (layout, theme, portfolio langs)
+    document.querySelectorAll('.toggle-btn[data-target="theme"]').forEach(b =>
+      b.classList.toggle('selected', b.dataset.value === state.theme));
+    document.querySelectorAll('.big-choice-card[data-target="layout"]').forEach(b =>
+      b.classList.toggle('selected', b.dataset.value === state.layoutType));
+    document.querySelectorAll('.toggle-btn[data-target]').forEach(b => {
+      if (b.dataset.target === 'portfolioLangs') {
+        b.classList.toggle('selected', state.portfolioLangs.includes(b.dataset.value));
+      }
+    });
+
+    // Restore repeater cards
+    function restoreCards(listId, cardFn, items, restoreFn) {
+      const list = document.getElementById(listId);
+      if (!list) return;
+      list.innerHTML = '';
+      items.forEach((item, idx) => {
+        addCard(listId, cardFn);
+        const cards = list.querySelectorAll('.repeater-card');
+        const card = cards[cards.length - 1];
+        if (!card) return;
+        restoreFn(card, item);
+      });
+      if (items.length === 0) addCard(listId, cardFn);
+    }
+
+    restoreCards('educationList', educationCard, draft.education || [], (card, item) => {
+      card.querySelector('[data-field="institution"]') && (card.querySelector('[data-field="institution"]').value = item.institution || '');
+      card.querySelector('[data-field="course"]') && (card.querySelector('[data-field="course"]').value = item.course || '');
+      card.querySelector('[data-field="degree"]') && (card.querySelector('[data-field="degree"]').value = item.degree || '');
+      card.querySelector('[data-field="periodStart"]') && (card.querySelector('[data-field="periodStart"]').value = item.periodStart || '');
+      card.querySelector('[data-field="periodEnd"]') && (card.querySelector('[data-field="periodEnd"]').value = item.periodEnd || '');
+      if (item.periodCurrent && card.querySelector('[data-field="periodCurrent"]')) {
+        card.querySelector('[data-field="periodCurrent"]').checked = true;
+        const endSel = card.querySelector('[data-field="periodEnd"]');
+        if (endSel) endSel.disabled = true;
+      }
+      card.querySelector('[data-field="description"]') && (card.querySelector('[data-field="description"]').value = item.description || '');
+    });
+
+    restoreCards('expList', expCard, draft.experience || [], (card, item) => {
+      ['company','role','type','description'].forEach(f => {
+        const el = card.querySelector(`[data-field="${f}"]`);
+        if (el) el.value = item[f] || '';
+      });
+      card.querySelector('[data-field="periodStart"]') && (card.querySelector('[data-field="periodStart"]').value = item.periodStart || '');
+      card.querySelector('[data-field="periodEnd"]') && (card.querySelector('[data-field="periodEnd"]').value = item.periodEnd || '');
+      if (item.periodCurrent && card.querySelector('[data-field="periodCurrent"]')) {
+        card.querySelector('[data-field="periodCurrent"]').checked = true;
+        const endSel = card.querySelector('[data-field="periodEnd"]');
+        if (endSel) endSel.disabled = true;
+      }
+    });
+
+    restoreCards('projectList', projectCard, draft.projects || [], (card, item) => {
+      ['name','description','repo','live'].forEach(f => {
+        const el = card.querySelector(`[data-field="${f}"]`);
+        if (el) el.value = item[f] || '';
+      });
+      // Restore proj tech tags
+      const cardId = card.id.replace('proj-','');
+      if (item.tech) {
+        const tags = item.tech.split(',').map(t => t.trim()).filter(Boolean);
+        projTechStores[cardId] = tags;
+        renderProjTechTags(cardId);
+      }
+    });
+
+    restoreCards('certList', certCard, draft.certificates || [], (card, item) => {
+      ['name','issuer','date','credentialId','link'].forEach(f => {
+        const el = card.querySelector(`[data-field="${f}"]`);
+        if (el) el.value = item[f] || '';
+      });
+    });
+
+    return true;
+  } catch(e) {
+    console.warn('PortGen: could not restore draft', e);
+    return false;
+  }
+}
+
+function showDraftBanner() {
+  if (document.getElementById('draftBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'draftBanner';
+  banner.className = 'draft-banner';
+  banner.innerHTML = `<span>📋 Rascunho restaurado automaticamente.</span><button onclick="clearDraft()" class="draft-clear-btn">Limpar rascunho</button>`;
+  const main = document.querySelector('.main');
+  if (main) main.prepend(banner);
+}
+
 // ════════════════════════════════════════════════════════
 // DIRTY FLAG — tracks whether the user has entered any data
 // ════════════════════════════════════════════════════════
@@ -1564,6 +1780,7 @@ function buildSummary() {
 // ════════════════════════════════════════════════════════
 function generatePortfolio() {
   clearDirty();
+  clearDraft();
   showToast(T.toast_gen, '', 3000);
   setTimeout(() => {
     const data = {
@@ -2340,9 +2557,15 @@ window.addEventListener('load', () => {
     if (e.key === 'Escape') closeTutorial();
   });
 
-  // Mark form dirty on any input/change inside the tool
-  document.getElementById('toolView').addEventListener('input',  markDirty);
-  document.getElementById('toolView').addEventListener('change', markDirty);
+  // Restore draft if available
+  if (hasDraft()) {
+    const restored = loadDraft();
+    if (restored) showDraftBanner();
+  }
+
+  // Mark form dirty and schedule autosave on any input/change inside the tool
+  document.getElementById('toolView').addEventListener('input',  () => { markDirty(); scheduleSave(); });
+  document.getElementById('toolView').addEventListener('change', () => { markDirty(); scheduleSave(); });
 
   // Warn before leaving if data has been entered
   window.addEventListener('beforeunload', e => {
