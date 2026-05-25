@@ -96,6 +96,19 @@ const TOOL_I18N = {
     edu_current: 'Em andamento', exp_current: 'Atual (ainda trabalho aqui)',
     // toast
     photo_error: 'Arquivo inválido. Use JPG ou PNG.',
+    tut_title: "Como publicar seu portfólio",
+    tut_sub: "Depois de gerar o arquivo HTML, veja como disponibilizá-lo online gratuitamente.",
+    tut_s1_h: "Salve o arquivo HTML",
+    tut_s1_p: "Com o portfólio aberto na nova aba, pressione <strong>Ctrl+S</strong> (ou Cmd+S no Mac) e salve o arquivo como <code>index.html</code> em uma pasta no seu computador.",
+    tut_s2_h: "Crie um repositório no GitHub",
+    tut_s2_p: "Acesse <strong>github.com</strong>, crie uma conta (se ainda não tiver) e clique em <em>New repository</em>. Dê um nome como <code>meu-portfolio</code> e marque como <em>Public</em>.",
+    tut_s3_h: "Envie o arquivo para o repositório",
+    tut_s3_p: "Dentro do repositório criado, clique em <em>Add file → Upload files</em> e arraste o <code>index.html</code> para lá. Confirme com <em>Commit changes</em>.",
+    tut_s4_h: "Ative o GitHub Pages",
+    tut_s4_p: "Vá em <em>Settings → Pages</em> do repositório. Em <em>Branch</em>, selecione <code>main</code> e clique em <em>Save</em>. Em alguns minutos, seu portfólio estará disponível em <code>seuusuario.github.io/meu-portfolio</code>.",
+    tut_s5_h: "Alternativa: Vercel (ainda mais rápido)",
+    tut_s5_p: "Acesse <strong>vercel.com</strong>, conecte sua conta do GitHub e importe o repositório. O Vercel detecta o arquivo automaticamente e publica em segundos, com um link personalizado.",
+    tut_tip: "<strong>💡 Domínio próprio:</strong> Tanto o GitHub Pages quanto o Vercel permitem conectar um domínio próprio (ex: <code>anaclara.dev</code>) gratuitamente. Basta comprar o domínio em um registrador e seguir as instruções de DNS de cada plataforma.",
     toast_gen: '✨ Gerando seu portfólio...',
   },
   en: {
@@ -178,6 +191,19 @@ const TOOL_I18N = {
     period_start_ph: 'Start...', period_end_ph: 'End...',
     edu_current: 'In progress', exp_current: 'Current (still working here)',
     photo_error: 'Invalid file. Please use JPG or PNG.',
+    tut_title: "How to publish your portfolio",
+    tut_sub: "After generating the HTML file, here's how to host it online for free.",
+    tut_s1_h: "Save the HTML file",
+    tut_s1_p: "With the portfolio open in a new tab, press <strong>Ctrl+S</strong> (or Cmd+S on Mac) and save the file as <code>index.html</code> in a folder on your computer.",
+    tut_s2_h: "Create a GitHub repository",
+    tut_s2_p: "Go to <strong>github.com</strong>, create an account if you don't have one, and click <em>New repository</em>. Name it something like <code>my-portfolio</code> and set it as <em>Public</em>.",
+    tut_s3_h: "Upload the file to the repository",
+    tut_s3_p: "Inside the repository, click <em>Add file → Upload files</em> and drag <code>index.html</code> there. Confirm with <em>Commit changes</em>.",
+    tut_s4_h: "Enable GitHub Pages",
+    tut_s4_p: "Go to <em>Settings → Pages</em> in your repository. Under <em>Branch</em>, select <code>main</code> and click <em>Save</em>. In a few minutes your portfolio will be live at <code>yourusername.github.io/my-portfolio</code>.",
+    tut_s5_h: "Alternative: Vercel (even faster)",
+    tut_s5_p: "Go to <strong>vercel.com</strong>, connect your GitHub account and import the repository. Vercel detects the file automatically and deploys in seconds, with a custom link.",
+    tut_tip: "<strong>💡 Custom domain:</strong> Both GitHub Pages and Vercel let you connect a custom domain (e.g. <code>yourname.dev</code>) for free. Just buy the domain from a registrar and follow each platform's DNS instructions.",
     toast_gen: '✨ Generating your portfolio...',
   },
   es: {
@@ -260,6 +286,19 @@ const TOOL_I18N = {
     period_start_ph: 'Inicio...', period_end_ph: 'Fin...',
     edu_current: 'En curso', exp_current: 'Actual (aún trabajo aquí)',
     photo_error: 'Archivo inválido. Usa JPG o PNG.',
+    tut_title: "Cómo publicar tu portafolio",
+    tut_sub: "Después de generar el archivo HTML, aquí te explicamos cómo alojarlo online gratis.",
+    tut_s1_h: "Guarda el archivo HTML",
+    tut_s1_p: "Con el portafolio abierto en una nueva pestaña, pulsa <strong>Ctrl+S</strong> (o Cmd+S en Mac) y guarda el archivo como <code>index.html</code> en una carpeta de tu computadora.",
+    tut_s2_h: "Crea un repositorio en GitHub",
+    tut_s2_p: "Accede a <strong>github.com</strong>, crea una cuenta si aún no tienes, y haz clic en <em>New repository</em>. Nómbralo algo como <code>mi-portfolio</code> y márcalo como <em>Public</em>.",
+    tut_s3_h: "Sube el archivo al repositorio",
+    tut_s3_p: "Dentro del repositorio, haz clic en <em>Add file → Upload files</em> y arrastra el <code>index.html</code> ahí. Confirma con <em>Commit changes</em>.",
+    tut_s4_h: "Activa GitHub Pages",
+    tut_s4_p: "Ve a <em>Settings → Pages</em> en el repositorio. En <em>Branch</em>, selecciona <code>main</code> y haz clic en <em>Save</em>. En unos minutos tu portafolio estará en <code>tuusuario.github.io/mi-portfolio</code>.",
+    tut_s5_h: "Alternativa: Vercel (aún más rápido)",
+    tut_s5_p: "Accede a <strong>vercel.com</strong>, conecta tu cuenta de GitHub e importa el repositorio. Vercel detecta el archivo automáticamente y publica en segundos con un enlace personalizado.",
+    tut_tip: "<strong>💡 Dominio propio:</strong> Tanto GitHub Pages como Vercel permiten conectar un dominio propio (ej: <code>tunombre.dev</code>) gratis. Solo compra el dominio en un registrador y sigue las instrucciones DNS de cada plataforma.",
     toast_gen: '✨ Generando tu portafolio...',
   },
   fr: {
@@ -342,6 +381,19 @@ const TOOL_I18N = {
     period_start_ph: 'Début...', period_end_ph: 'Fin...',
     edu_current: 'En cours', exp_current: "Actuel (j'y travaille encore)",
     photo_error: 'Fichier invalide. Utilisez JPG ou PNG.',
+    tut_title: "Comment publier votre portfolio",
+    tut_sub: "Après avoir généré le fichier HTML, voici comment l'héberger en ligne gratuitement.",
+    tut_s1_h: "Enregistrez le fichier HTML",
+    tut_s1_p: "Avec le portfolio ouvert dans un nouvel onglet, appuyez sur <strong>Ctrl+S</strong> (ou Cmd+S sur Mac) et enregistrez le fichier sous <code>index.html</code> dans un dossier de votre ordinateur.",
+    tut_s2_h: "Créez un dépôt GitHub",
+    tut_s2_p: "Rendez-vous sur <strong>github.com</strong>, créez un compte si vous n'en avez pas, et cliquez sur <em>New repository</em>. Donnez-lui un nom comme <code>mon-portfolio</code> et définissez-le comme <em>Public</em>.",
+    tut_s3_h: "Envoyez le fichier dans le dépôt",
+    tut_s3_p: "Dans le dépôt, cliquez sur <em>Add file → Upload files</em> et faites glisser <code>index.html</code>. Confirmez avec <em>Commit changes</em>.",
+    tut_s4_h: "Activez GitHub Pages",
+    tut_s4_p: "Allez dans <em>Settings → Pages</em> du dépôt. Sous <em>Branch</em>, sélectionnez <code>main</code> et cliquez sur <em>Save</em>. En quelques minutes, votre portfolio sera disponible à <code>votrenom.github.io/mon-portfolio</code>.",
+    tut_s5_h: "Alternative : Vercel (encore plus rapide)",
+    tut_s5_p: "Rendez-vous sur <strong>vercel.com</strong>, connectez votre compte GitHub et importez le dépôt. Vercel détecte le fichier automatiquement et publie en quelques secondes avec un lien personnalisé.",
+    tut_tip: "<strong>💡 Domaine personnalisé :</strong> GitHub Pages et Vercel permettent tous deux de connecter un domaine personnalisé (ex : <code>votreprenom.dev</code>) gratuitement. Achetez le domaine chez un registrar et suivez les instructions DNS de chaque plateforme.",
     toast_gen: '✨ Génération de votre portfolio...',
   }
 };
@@ -621,10 +673,14 @@ function applyToolI18n() {
   setEl('#colorPreviewLabel', T.color_preview);
   updatePalettePreview();
 
-  // All nav buttons
+  // All elements with data-i18n (textContent) or data-i18n-html (innerHTML)
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
-    if (T[key]) el.textContent = T[key];
+    if (T[key] !== undefined) el.textContent = T[key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.dataset.i18nHtml;
+    if (T[key] !== undefined) el.innerHTML = T[key];
   });
 
   // Re-render cards with new labels
