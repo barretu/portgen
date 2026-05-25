@@ -1560,8 +1560,14 @@ function buildPortfolioHTML(d) {
     ? `<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="${t.toggleTheme}"><span id="themeIcon">☀️</span></button>` : '';
 
   function sW(id, content, lang) {
-    if (isLanding) return `<section id="${lang && lang !== 'pt' ? id+'-'+lang : id}" class="section"${lang ? ` data-lang-section="${lang}"` : ''}${lang && lang !== 'pt' ? ' style="display:none"' : ''}>${content}</section>`;
-    return `<div class="page" id="${lang && lang !== 'pt' ? 'page-'+id+'-'+lang : 'page-'+id}" data-lang-section="${lang||'pt'}" style="${lang && lang !== 'pt' ? 'display:none' : (isLanding ? '' : 'display:none')}">${content}</div>`;
+    const l = lang || 'pt';
+    if (isLanding) {
+      const elId = l !== 'pt' ? id + '-' + l : id;
+      const hidden = l !== 'pt' ? ' style="display:none"' : '';
+      return `<section id="${elId}" class="section" data-lang-section="${l}"${hidden}>${content}</section>`;
+    }
+    const elId = l !== 'pt' ? 'page-' + id + '-' + l : 'page-' + id;
+    return `<div class="page" id="${elId}" data-lang-section="${l}" style="display:none">${content}</div>`;
   }
 
   function multiLang(id, buildFn) {
@@ -1635,10 +1641,16 @@ function buildPortfolioHTML(d) {
     function switchLang(lang){
       currentLang=lang;
       document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
-      document.querySelectorAll('[data-lang-section]').forEach(el=>{
+      ${isLanding
+        ? `document.querySelectorAll('[data-lang-section]').forEach(el=>{
         el.style.display=(el.getAttribute('data-lang-section')===lang)?'':'none';
       });
-      ${isLanding ? `document.querySelectorAll('.nav-link').forEach(a=>{const base=a.dataset.page;a.href='#'+(lang!=='pt'?base+'-'+lang:base);});` : ''}
+      document.querySelectorAll('.nav-link').forEach(a=>{const base=a.dataset.page;a.href='#'+(lang!=='pt'?base+'-'+lang:base);});`
+        : `const activePage=document.querySelector('.page[style*="block"]');
+      const activeId=activePage?activePage.id.replace(/^page-/,'').replace(/-[a-z]{2}$/,''):'about';
+      document.querySelectorAll('.page').forEach(el=>el.style.display='none');
+      showPage(activeId,lang);`
+      }
     }
   ` : `let currentLang='pt';`;
 
