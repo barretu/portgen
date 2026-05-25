@@ -368,8 +368,7 @@ function toggleToolTheme() {
   updateThemeIcon();
 }
 function updateThemeIcon() {
-  const btn = document.getElementById('themeToggleBtn');
-  if (btn) btn.textContent = toolTheme === 'dark' ? '☀️' : '🌙';
+  // Icon swap handled purely via CSS on [data-theme] — nothing to do here
 }
 
 // ════════════════════════════════════════════════════════
@@ -417,16 +416,16 @@ function applyLandingI18n() {
     pt: {
       badge: 'Ferramenta gratuita · 100% no navegador',
       h1: 'Crie seu portfólio<br>profissional em <em>minutos</em>',
-      desc: 'O <strong>PortGen</strong> guia você por um formulário inteligente e gera um site de portfólio completo — com design moderno, paleta de cores personalizada, currículo pronto para imprimir e suporte a múltiplos idiomas. Sem código. Sem cadastro.',
+      desc: 'O <strong>PortGen</strong> guia você por um formulário inteligente e gera um site de portfólio completo com design moderno, paleta de cores personalizada, currículo pronto para imprimir e suporte a múltiplos idiomas. Sem código. Sem cadastro.',
       cta1: '✨ Criar meu portfólio', cta2: '📖 Como publicar meu portfólio',
       howTitle: 'Como funciona', howSub: 'Em apenas 4 passos você tem um portfólio pronto para publicar',
       steps: [['Configure','Escolha o layout, tema, idiomas e paleta de cores do seu portfólio.'],['Preencha','Adicione suas experiências, projetos, habilidades e certificados.'],['Gere','Clique em gerar e seu portfólio abre em uma nova aba, pronto para uso.'],['Publique','Salve o arquivo HTML e hospede gratuitamente no GitHub Pages ou Vercel.']],
       features: [
         ['🎨','Design personalizado','Escolha sua paleta de cores com um seletor de harmonia cromática e veja o resultado em tempo real.'],
-        ['🌐','Multilíngue','Gere seu portfólio em Português, Inglês, Espanhol e Francês — tudo em um único arquivo HTML.'],
+        ['🌐','Multilíngue','Gere seu portfólio em Português, Inglês, Espanhol e Francês, tudo em um único arquivo HTML.'],
         ['📄','Currículo incluso','Além do portfólio, o PortGen gera um currículo limpo e otimizado para ATS, pronto para PDF.'],
         ['🔒','Privacidade total','Tudo acontece no seu navegador. Seus dados nunca saem do seu dispositivo.'],
-        ['📱','Responsivo','O portfólio gerado funciona em qualquer tela — desktop, tablet ou celular.'],
+        ['📱','Responsivo','O portfólio gerado funciona em qualquer tela,  desktop, tablet ou celular.'],
         ['⚡','Sem código','Basta preencher o formulário. O PortGen cuida de todo o HTML, CSS e JavaScript por você.'],
       ],
       langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],
@@ -434,16 +433,16 @@ function applyLandingI18n() {
     en: {
       badge: 'Free tool · 100% in your browser',
       h1: 'Create your professional<br>portfolio in <em>minutes</em>',
-      desc: '<strong>PortGen</strong> guides you through a smart form and generates a complete portfolio website — modern design, custom color palette, print-ready resume, and multi-language support. No code. No signup.',
+      desc: '<strong>PortGen</strong> guides you through a smart form and generates a complete portfolio website with modern design, custom color palette, print-ready resume, and multi-language support. No code. No signup.',
       cta1: '✨ Create my portfolio', cta2: '📖 How to publish my portfolio',
       howTitle: 'How it works', howSub: 'In just 4 steps you have a portfolio ready to publish',
       steps: [['Configure','Choose the layout, theme, languages and color palette for your portfolio.'],['Fill in','Add your experiences, projects, skills and certificates.'],['Generate','Click generate and your portfolio opens in a new tab, ready to use.'],['Publish','Save the HTML file and host it for free on GitHub Pages or Vercel.']],
       features: [
         ['🎨','Custom design','Choose your color palette with a chromatic harmony selector and see the result in real time.'],
-        ['🌐','Multilingual','Generate your portfolio in Portuguese, English, Spanish and French — all in a single HTML file.'],
+        ['🌐','Multilingual','Generate your portfolio in Portuguese, English, Spanish and French, all in a single HTML file.'],
         ['📄','Resume included','In addition to the portfolio, PortGen generates a clean, ATS-optimised resume ready for PDF.'],
         ['🔒','Full privacy','Everything happens in your browser. Your data never leaves your device.'],
-        ['📱','Responsive','The generated portfolio works on any screen — desktop, tablet or mobile.'],
+        ['📱','Responsive','The generated portfolio works on any screen, desktop, tablet or mobile.'],
         ['⚡','No code','Just fill in the form. PortGen handles all the HTML, CSS and JavaScript for you.'],
       ],
       langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],
@@ -451,16 +450,16 @@ function applyLandingI18n() {
     es: {
       badge: 'Herramienta gratuita · 100% en el navegador',
       h1: 'Crea tu portafolio<br>profesional en <em>minutos</em>',
-      desc: '<strong>PortGen</strong> te guía por un formulario inteligente y genera un sitio de portafolio completo — diseño moderno, paleta de colores personalizada, currículum listo para imprimir y soporte multiidioma. Sin código. Sin registro.',
+      desc: '<strong>PortGen</strong> te guía por un formulario inteligente y genera un sitio de portafolio completo con diseño moderno, paleta de colores personalizada, currículum listo para imprimir y soporte multiidioma. Sin código. Sin registro.',
       cta1: '✨ Crear mi portafolio', cta2: '📖 Cómo publicar mi portafolio',
       howTitle: 'Cómo funciona', howSub: 'En solo 4 pasos tienes un portafolio listo para publicar',
       steps: [['Configura','Elige el diseño, tema, idiomas y paleta de colores de tu portafolio.'],['Rellena','Agrega tus experiencias, proyectos, habilidades y certificados.'],['Genera','Haz clic en generar y tu portafolio se abre en una nueva pestaña.'],['Publica','Guarda el archivo HTML y alójalo gratis en GitHub Pages o Vercel.']],
       features: [
         ['🎨','Diseño personalizado','Elige tu paleta de colores con un selector de armonía cromática y ve el resultado en tiempo real.'],
-        ['🌐','Multilingüe','Genera tu portafolio en Portugués, Inglés, Español y Francés — todo en un único archivo HTML.'],
+        ['🌐','Multilingüe','Genera tu portafolio en Portugués, Inglés, Español y Francés, todo en un único archivo HTML.'],
         ['📄','Currículum incluido','Además del portafolio, PortGen genera un currículum limpio y optimizado para ATS, listo en PDF.'],
         ['🔒','Privacidad total','Todo ocurre en tu navegador. Tus datos nunca salen de tu dispositivo.'],
-        ['📱','Responsivo','El portafolio generado funciona en cualquier pantalla — escritorio, tablet o móvil.'],
+        ['📱','Responsivo','El portafolio generado funciona en cualquier pantalla, escritorio, tablet o móvil.'],
         ['⚡','Sin código','Solo rellena el formulario. PortGen se encarga de todo el HTML, CSS y JavaScript por ti.'],
       ],
       langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],
@@ -468,16 +467,16 @@ function applyLandingI18n() {
     fr: {
       badge: 'Outil gratuit · 100% dans le navigateur',
       h1: 'Créez votre portfolio<br>professionnel en <em>minutes</em>',
-      desc: '<strong>PortGen</strong> vous guide à travers un formulaire intelligent et génère un site portfolio complet — design moderne, palette de couleurs personnalisée, CV prêt à imprimer et support multilingue. Sans code. Sans inscription.',
+      desc: '<strong>PortGen</strong> vous guide à travers un formulaire intelligent et génère un site portfolio complet avec design moderne, palette de couleurs personnalisée, CV prêt à imprimer et support multilingue. Sans code. Sans inscription.',
       cta1: '✨ Créer mon portfolio', cta2: '📖 Comment publier mon portfolio',
       howTitle: 'Comment ça marche', howSub: 'En seulement 4 étapes, vous avez un portfolio prêt à publier',
       steps: [['Configurez','Choisissez la mise en page, le thème, les langues et la palette de couleurs.'],['Remplissez','Ajoutez vos expériences, projets, compétences et certifications.'],['Générez','Cliquez sur générer et votre portfolio s\'ouvre dans un nouvel onglet.'],['Publiez','Enregistrez le fichier HTML et hébergez-le gratuitement sur GitHub Pages ou Vercel.']],
       features: [
         ['🎨','Design personnalisé','Choisissez votre palette de couleurs avec un sélecteur d\'harmonie chromatique et voyez le résultat en temps réel.'],
-        ['🌐','Multilingue','Générez votre portfolio en Portugais, Anglais, Espagnol et Français — tout dans un seul fichier HTML.'],
+        ['🌐','Multilingue','Générez votre portfolio en Portugais, Anglais, Espagnol et Français, tout dans un seul fichier HTML.'],
         ['📄','CV inclus','En plus du portfolio, PortGen génère un CV épuré et optimisé ATS, prêt pour le PDF.'],
         ['🔒','Confidentialité totale','Tout se passe dans votre navigateur. Vos données ne quittent jamais votre appareil.'],
-        ['📱','Responsive','Le portfolio généré fonctionne sur n\'importe quel écran — bureau, tablette ou mobile.'],
+        ['📱','Responsive','Le portfolio généré fonctionne sur n\'importe quel écran, bureau, tablette ou mobile.'],
         ['⚡','Sans code','Il suffit de remplir le formulaire. PortGen s\'occupe de tout le HTML, CSS et JavaScript pour vous.'],
       ],
       langBtns: ['🇧🇷 Português','🇺🇸 English','🇪🇸 Español','🇫🇷 Français'],

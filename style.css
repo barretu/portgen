@@ -185,6 +185,43 @@ body {
 }
 .step-dot.active:hover { transform: none; }
 
+/* ─── THEME TOGGLE BUTTON ─── */
+.theme-toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: border-color var(--t), background var(--t), transform .3s cubic-bezier(.34,1.56,.64,1);
+  padding: 0; flex-shrink: 0; color: var(--text);
+  position: relative; overflow: hidden;
+}
+.theme-toggle-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  transform: scale(1.1);
+}
+.theme-toggle-btn:active { transform: scale(.95); }
+
+.theme-icon-wrap {
+  position: relative; width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+.icon-sun, .icon-moon {
+  width: 18px; height: 18px;
+  position: absolute; top: 0; left: 0;
+  transition: opacity .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* dark mode: show sun (to switch to light) */
+[data-theme="dark"] .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+[data-theme="dark"] .icon-moon { opacity: 0; transform: rotate(-90deg) scale(.5); }
+
+/* light mode: show moon (to switch to dark) */
+[data-theme="light"] .icon-sun  { opacity: 0; transform: rotate(90deg) scale(.5); }
+[data-theme="light"] .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+
+/* spin sun on hover in dark mode */
+[data-theme="dark"] .theme-toggle-btn:hover .icon-sun { transform: rotate(45deg) scale(1.1); }
+
 /* ─── LANDING PAGE ─── */
 .hero-landing {
   min-height: calc(100vh - 65px); display: flex; flex-direction: column;
