@@ -416,6 +416,14 @@ const state = {
 };
 
 // ════════════════════════════════════════════════════════
+// DIRTY FLAG — tracks whether the user has entered any data
+// ════════════════════════════════════════════════════════
+let formDirty = false;
+
+function markDirty() { formDirty = true; }
+function clearDirty() { formDirty = false; }
+
+// ════════════════════════════════════════════════════════
 // TOOL THEME
 // ════════════════════════════════════════════════════════
 let toolTheme = 'dark';
@@ -1555,6 +1563,7 @@ function buildSummary() {
 // GENERATE PORTFOLIO
 // ════════════════════════════════════════════════════════
 function generatePortfolio() {
+  clearDirty();
   showToast(T.toast_gen, '', 3000);
   setTimeout(() => {
     const data = {
@@ -2329,5 +2338,17 @@ window.addEventListener('load', () => {
   // Close modal on ESC
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeTutorial();
+  });
+
+  // Mark form dirty on any input/change inside the tool
+  document.getElementById('toolView').addEventListener('input',  markDirty);
+  document.getElementById('toolView').addEventListener('change', markDirty);
+
+  // Warn before leaving if data has been entered
+  window.addEventListener('beforeunload', e => {
+    if (formDirty) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
   });
 });
