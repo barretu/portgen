@@ -20,7 +20,6 @@
 }
 
 /* ─── PAGE STRUCTURE: footer always at bottom ─── */
-html, body { height: 100%; }
 body {
   font-family: var(--font-body);
   background: var(--bg);
@@ -34,12 +33,12 @@ body {
   transition: background var(--t), color var(--t);
 }
 .tool-header { flex-shrink: 0; }
-.tool-footer { flex-shrink: 0; }
+.tool-footer { flex-shrink: 0; margin-top: auto; }
 
 /* Landing and tool view fill available space */
 #landingPage { display: none; flex: 1; flex-direction: column; }
 #landingPage.active { display: flex; }
-#toolView { display: none; flex: 1; flex-direction: column; min-height: 0; overflow-y: auto; }
+#toolView { display: none; flex: 1; flex-direction: column; }
 #toolView.active { display: flex; }
 .main { flex: 1; max-width: 780px; width: 100%; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
 
@@ -813,3 +812,30 @@ kbd { display: inline-flex; align-items: center; justify-content: center; paddin
   transition: all var(--t); white-space: nowrap;
 }
 .draft-clear-btn:hover { border-color: #e05555; color: #e05555; }
+
+/* ── PREVIEW HEADER BUTTON ── */
+.btn-preview-header {
+  display: flex; align-items: center; gap: .4rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: .4rem .85rem;
+  color: var(--text-muted); font-size: .82rem; font-weight: 500;
+  cursor: pointer; transition: all var(--t); white-space: nowrap;
+}
+.btn-preview-header:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── PREVIEW MODAL ── */
+.modal-preview {
+  max-width: 960px; width: 95vw;
+  max-height: 90vh; height: 90vh;
+  display: flex; flex-direction: column; padding: 0; overflow: hidden;
+}
+.preview-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .9rem 1.25rem; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.preview-modal-title { font-weight: 600; font-size: .95rem; }
+.preview-frame {
+  flex: 1; width: 100%; border: none; background: #fff;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}

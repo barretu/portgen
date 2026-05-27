@@ -109,6 +109,7 @@ const TOOL_I18N = {
     tut_s5_h: "Alternativa: Vercel (ainda mais rápido)",
     tut_s5_p: "Acesse <strong>vercel.com</strong>, conecte sua conta do GitHub e importe o repositório. O Vercel detecta o arquivo automaticamente e publica em segundos, com um link personalizado.",
     tut_tip: "<strong>💡 Domínio próprio:</strong> Tanto o GitHub Pages quanto o Vercel permitem conectar um domínio próprio (ex: <code>anaclara.dev</code>) gratuitamente. Basta comprar o domínio em um registrador e seguir as instruções de DNS de cada plataforma.",
+    preview_btn: 'Pré-visualizar', preview_title: 'Pré-visualização do Portfólio',
     toast_gen: '✨ Gerando seu portfólio...',
   },
   en: {
@@ -204,6 +205,7 @@ const TOOL_I18N = {
     tut_s5_h: "Alternative: Vercel (even faster)",
     tut_s5_p: "Go to <strong>vercel.com</strong>, connect your GitHub account and import the repository. Vercel detects the file automatically and deploys in seconds, with a custom link.",
     tut_tip: "<strong>💡 Custom domain:</strong> Both GitHub Pages and Vercel let you connect a custom domain (e.g. <code>yourname.dev</code>) for free. Just buy the domain from a registrar and follow each platform's DNS instructions.",
+    preview_btn: 'Preview', preview_title: 'Portfolio Preview',
     toast_gen: '✨ Generating your portfolio...',
   },
   es: {
@@ -299,6 +301,7 @@ const TOOL_I18N = {
     tut_s5_h: "Alternativa: Vercel (aún más rápido)",
     tut_s5_p: "Accede a <strong>vercel.com</strong>, conecta tu cuenta de GitHub e importa el repositorio. Vercel detecta el archivo automáticamente y publica en segundos con un enlace personalizado.",
     tut_tip: "<strong>💡 Dominio propio:</strong> Tanto GitHub Pages como Vercel permiten conectar un dominio propio (ej: <code>tunombre.dev</code>) gratis. Solo compra el dominio en un registrador y sigue las instrucciones DNS de cada plataforma.",
+    preview_btn: 'Vista previa', preview_title: 'Vista previa del portafolio',
     toast_gen: '✨ Generando tu portafolio...',
   },
   fr: {
@@ -394,6 +397,7 @@ const TOOL_I18N = {
     tut_s5_h: "Alternative : Vercel (encore plus rapide)",
     tut_s5_p: "Rendez-vous sur <strong>vercel.com</strong>, connectez votre compte GitHub et importez le dépôt. Vercel détecte le fichier automatiquement et publie en quelques secondes avec un lien personnalisé.",
     tut_tip: "<strong>💡 Domaine personnalisé :</strong> GitHub Pages et Vercel permettent tous deux de connecter un domaine personnalisé (ex : <code>votreprenom.dev</code>) gratuitement. Achetez le domaine chez un registrar et suivez les instructions DNS de chaque plateforme.",
+    preview_btn: 'Aperçu', preview_title: 'Aperçu du portfolio',
     toast_gen: '✨ Génération de votre portfolio...',
   }
 };
@@ -955,6 +959,7 @@ function refreshCardLabels() {
 function showTool() {
   document.getElementById('landingPage').classList.remove('active');
   document.getElementById('toolView').classList.add('active');
+  document.getElementById('previewHeaderBtn').style.display = 'flex';
   const wrap = document.getElementById('stepIndicatorWrap');
   if (wrap) wrap.style.display = 'flex';
   document.getElementById('progressBarWrap').classList.add('visible');
@@ -962,6 +967,8 @@ function showTool() {
   updateIndicator();
 }
 function showLanding() {
+  const prevBtn = document.getElementById('previewHeaderBtn');
+  if (prevBtn) prevBtn.style.display = 'none';
   document.getElementById('toolView').classList.remove('active');
   document.getElementById('landingPage').classList.add('active');
   const wrap = document.getElementById('stepIndicatorWrap');
@@ -1738,6 +1745,24 @@ function updatePalettePreview() {
 function openTutorial() { document.getElementById('tutorialModal').classList.add('open'); }
 function closeTutorial() { document.getElementById('tutorialModal').classList.remove('open'); }
 
+
+// ════════════════════════════════════════════════════════
+// PREVIEW MODAL
+// ════════════════════════════════════════════════════════
+function openPreview() {
+  const html = buildPortfolioHTML(collectFormData());
+  const frame = document.getElementById('previewFrame');
+  const modal = document.getElementById('previewModal');
+  frame.srcdoc = html;
+  modal.classList.add('open');
+}
+function closePreview() {
+  const modal = document.getElementById('previewModal');
+  modal.classList.remove('open');
+  // Clear srcdoc to stop any scripts running in background
+  setTimeout(() => { document.getElementById('previewFrame').srcdoc = ''; }, 300);
+}
+
 // ════════════════════════════════════════════════════════
 // SUMMARY (step 11)
 // ════════════════════════════════════════════════════════
@@ -1778,39 +1803,42 @@ function buildSummary() {
 // ════════════════════════════════════════════════════════
 // GENERATE PORTFOLIO
 // ════════════════════════════════════════════════════════
+function collectFormData() {
+  return {
+    ...state,
+    fullName:     document.getElementById('fullName').value,
+    jobTitle:     document.getElementById('jobTitle').value,
+    email:        document.getElementById('email').value,
+    phone:        (selectedDdi ? selectedDdi.code + ' ' : '') + document.getElementById('phone').value,
+    linkedin:     document.getElementById('linkedin').value,
+    github:       document.getElementById('github').value || '',
+    location:     document.getElementById('locationInput').value || state.location,
+    website:      document.getElementById('website').value,
+    behance:      document.getElementById('behance').value,
+    dribbble:     document.getElementById('dribbble').value,
+    youtube:      document.getElementById('youtube').value,
+    extraLink:    document.getElementById('extraLink').value,
+    extraLinkLabel: document.getElementById('extraLinkLabel').value,
+    about:        document.getElementById('about').value,
+    education:    collectCards('educationList', ['institution','course','degree','period','description']),
+    experience:   collectCards('expList',       ['company','role','period','type','description']),
+    projects:     collectCards('projectList',   ['name','tech','description','repo','live']),
+    certificates: collectCards('certList',      ['name','issuer','date','credentialId','link']),
+    techSkills:   [...tagStores.techTags],
+    softSkills:   [...tagStores.softTags],
+    langSkills:   [...tagStores.langTags],
+    palette:      getHarmonyColors(selectedHue, selectedHarmony),
+    hue:          selectedHue,
+    harmony:      selectedHarmony,
+  };
+}
+
 function generatePortfolio() {
   clearDirty();
   clearDraft();
   showToast(T.toast_gen, '', 3000);
   setTimeout(() => {
-    const data = {
-      ...state,
-      fullName:     document.getElementById('fullName').value,
-      jobTitle:     document.getElementById('jobTitle').value,
-      email:        document.getElementById('email').value,
-      phone:        (selectedDdi ? selectedDdi.code + ' ' : '') + document.getElementById('phone').value,
-      linkedin:     document.getElementById('linkedin').value,
-      github:       document.getElementById('github').value || '',
-      location:     document.getElementById('locationInput').value || state.location,
-      website:      document.getElementById('website').value,
-      behance:      document.getElementById('behance').value,
-      dribbble:     document.getElementById('dribbble').value,
-      youtube:      document.getElementById('youtube').value,
-      extraLink:    document.getElementById('extraLink').value,
-      extraLinkLabel: document.getElementById('extraLinkLabel').value,
-      about:        document.getElementById('about').value,
-      education:    collectCards('educationList', ['institution','course','degree','period','description']),
-      experience:   collectCards('expList',       ['company','role','period','type','description']),
-      projects:     collectCards('projectList',   ['name','tech','description','repo','live']),
-      certificates: collectCards('certList',      ['name','issuer','date','credentialId','link']),
-      techSkills:   [...tagStores.techTags],
-      softSkills:   [...tagStores.softTags],
-      langSkills:   [...tagStores.langTags],
-      palette:      getHarmonyColors(selectedHue, selectedHarmony),
-      hue:          selectedHue,
-      harmony:      selectedHarmony,
-    };
-    const html = buildPortfolioHTML(data);
+    const html = buildPortfolioHTML(collectFormData());
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     window.open(URL.createObjectURL(blob), '_blank');
   }, 300);
@@ -2554,7 +2582,7 @@ window.addEventListener('load', () => {
 
   // Close modal on ESC
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeTutorial();
+    if (e.key === 'Escape') { closeTutorial(); closePreview(); }
   });
 
   // Restore draft if available

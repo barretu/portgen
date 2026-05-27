@@ -18,6 +18,10 @@
     <span class="logo-text">Port<span>Gen</span></span>
   </a>
   <div class="header-right">
+    <button class="btn-preview-header" id="previewHeaderBtn" onclick="openPreview()" style="display:none" title="Pré-visualizar portfólio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span data-i18n="preview_btn">Pré-visualizar</span>
+    </button>
     <div class="tool-lang-dropdown" id="toolLangDropdown">
       <button class="tool-lang-trigger" id="toolLangTrigger" onclick="toggleLangDropdown(event)">
         <span id="toolLangFlag">🇧🇷</span>
@@ -563,6 +567,17 @@
 
 <div class="progress-bar-wrap" id="progressBarWrap"><div class="progress-bar" id="progressBar"></div></div>
 <div class="toast" id="toast"></div>
+<!-- ══ PREVIEW MODAL ══ -->
+<div class="modal-overlay" id="previewModal" onclick="if(event.target===this)closePreview()">
+  <div class="modal modal-preview">
+    <div class="preview-modal-header">
+      <span class="preview-modal-title" data-i18n="preview_title">Pré-visualização do Portfólio</span>
+      <button class="modal-close" onclick="closePreview()">✕</button>
+    </div>
+    <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>
