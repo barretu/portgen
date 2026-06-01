@@ -231,7 +231,7 @@
             <span id="phoneDdiCode">+55</span>
             <svg viewBox="0 0 10 6" fill="none" style="width:10px;height:6px;flex-shrink:0"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </button>
-          <input type="tel" id="phone" placeholder="(81) 99999-0000" style="border-radius:0 var(--radius) var(--radius) 0;border-left:none" />
+          <input type="tel" id="phone" placeholder="(81) 99999-0000" style="border-radius:0 var(--radius) var(--radius) 0;border-left:none" oninput="onPhoneInput(event)" inputmode="numeric" autocomplete="tel" />
           <div class="ddi-dropdown" id="ddiDropdown">
             <div class="ddi-search-wrap"><input type="text" class="ddi-search" id="ddiSearch" placeholder="Buscar pais..." oninput="filterDdi(this.value)" /></div>
             <div class="ddi-list" id="ddiList"></div>

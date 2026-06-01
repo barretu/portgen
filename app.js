@@ -88,7 +88,7 @@ const TOOL_I18N = {
     // Summary
     you: 'Você', settings: 'Configurações', palette: 'Paleta',
     // Degree options
-    degrees: ['Graduação','Técnico','Pós-graduação','MBA','Mestrado','Doutorado','Bootcamp','Curso Livre'],
+    degrees: ['Graduação','Técnico','Tecnólogo','Pós-graduação','MBA','Mestrado','Doutorado','Bootcamp','Curso Livre'],
     exp_types: ['CLT','PJ','Freelance','Estágio','Voluntário'],
     // Optional
     optional: 'opcional', required: '*',
@@ -2223,6 +2223,35 @@ function filterDdi(query) {
   const q = query.toLowerCase();
   renderDdiList(DDI_LIST.filter(d => d.name.toLowerCase().includes(q) || d.code.includes(q)));
 }
+function applyPhoneMask(value, mask) {
+  // Strip everything except digits
+  const digits = value.replace(/\D/g, '');
+  let result = '';
+  let di = 0;
+  for (let mi = 0; mi < mask.length && di < digits.length; mi++) {
+    if (mask[mi] === '#') {
+      result += digits[di++];
+    } else {
+      result += mask[mi];
+      // If the next char typed would naturally produce this separator, skip forward
+      if (digits[di] === mask[mi]) di++;
+    }
+  }
+  return result;
+}
+
+function onPhoneInput(e) {
+  if (!selectedDdi || !selectedDdi.mask) return;
+  const input = e.target;
+  const cursor = input.selectionStart;
+  const prevLen = input.value.length;
+  const masked = applyPhoneMask(input.value, selectedDdi.mask);
+  input.value = masked;
+  // Restore cursor position intelligently
+  const diff = masked.length - prevLen;
+  input.setSelectionRange(cursor + diff, cursor + diff);
+}
+
 function selectDdi(ddi) {
   selectedDdi = ddi;
   const flagEl = document.getElementById('phoneDdiFlag');
@@ -2232,7 +2261,13 @@ function selectDdi(ddi) {
   const dd = document.getElementById('ddiDropdown');
   if (dd) dd.classList.remove('open');
   const phoneInput = document.getElementById('phone');
-  if (phoneInput) { phoneInput.placeholder = ddi.mask.replace(/#/g,'0'); phoneInput.focus(); }
+  if (phoneInput) {
+    // Build placeholder from mask: (##) #####-#### → (00) 00000-0000
+    phoneInput.placeholder = ddi.mask.replace(/#/g, '0');
+    // Clear and re-mask whatever is already typed
+    phoneInput.value = applyPhoneMask(phoneInput.value, ddi.mask);
+    phoneInput.focus();
+  }
 }
 function toggleDdiDropdown() {
   const dd = document.getElementById('ddiDropdown');
