@@ -88,7 +88,7 @@ const TOOL_I18N = {
     // Summary
     you: 'Você', settings: 'Configurações', palette: 'Paleta',
     // Degree options
-    degrees: ['Graduação','Técnico','Tecnólogo','Pós-graduação','MBA','Mestrado','Doutorado','Bootcamp','Curso Livre'],
+    degrees: ['Graduação','Técnico','Pós-graduação','MBA','Mestrado','Doutorado','Bootcamp','Curso Livre'],
     exp_types: ['CLT','PJ','Freelance','Estágio','Voluntário'],
     // Optional
     optional: 'opcional', required: '*',
@@ -1899,7 +1899,7 @@ function buildPortfolioHTML(d) {
   }
 
   const aboutHtml = d.about ? d.about.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') : '';
-  const aboutContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.about}</h2><div class="about-grid">${d.photo?`<div class="about-photo-wrap"><img src="${d.photo}" class="about-photo" alt="${d.fullName}" /></div>`:''}<div class="about-text"><p>${aboutHtml}</p>${d.location?`<div class="about-meta">📍 ${d.location}</div>`:''}</div></div></div>`;
+  const aboutContent    = tl => `<div class="section-inner"><h2 class="sec-title">${tl.about}</h2><div class="about-grid"><div class="about-text"><p>${aboutHtml}</p>${d.location?`<div class="about-meta">📍 ${d.location}</div>`:''}</div></div></div>`;
   const educationContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.education}</h2><div class="timeline">${d.education.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.course||''}</div><div class="tl-sub">${e.institution||''} · ${e.degree||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
   const experienceContent= tl => `<div class="section-inner"><h2 class="sec-title">${tl.experience}</h2><div class="timeline">${d.experience.map(e=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="tl-header"><div><div class="tl-title">${e.role||''}</div><div class="tl-sub">${e.company||''} · ${e.type||''}</div></div><div class="tl-period">${e.period||''}</div></div>${e.description?`<p class="tl-desc">${e.description}</p>`:''}</div></div>`).join('')}</div></div>`;
   const projectsContent = tl => `<div class="section-inner"><h2 class="sec-title">${tl.projects}</h2><div class="projects-grid">${d.projects.map(p=>`<div class="project-card"><div class="project-name">${p.name||''}</div><div class="project-tech-tags">${(p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('')}</div><p class="project-desc">${p.description||''}</p><div class="project-links">${p.repo?`<a href="${p.repo}" target="_blank" class="plink">${tl.viewRepo} ↗</a>`:''} ${p.live?`<a href="${p.live}" target="_blank" class="plink">${tl.viewProject} ↗</a>`:''}</div></div>`).join('')}</div></div>`;
@@ -2223,35 +2223,6 @@ function filterDdi(query) {
   const q = query.toLowerCase();
   renderDdiList(DDI_LIST.filter(d => d.name.toLowerCase().includes(q) || d.code.includes(q)));
 }
-function applyPhoneMask(value, mask) {
-  // Strip everything except digits
-  const digits = value.replace(/\D/g, '');
-  let result = '';
-  let di = 0;
-  for (let mi = 0; mi < mask.length && di < digits.length; mi++) {
-    if (mask[mi] === '#') {
-      result += digits[di++];
-    } else {
-      result += mask[mi];
-      // If the next char typed would naturally produce this separator, skip forward
-      if (digits[di] === mask[mi]) di++;
-    }
-  }
-  return result;
-}
-
-function onPhoneInput(e) {
-  if (!selectedDdi || !selectedDdi.mask) return;
-  const input = e.target;
-  const cursor = input.selectionStart;
-  const prevLen = input.value.length;
-  const masked = applyPhoneMask(input.value, selectedDdi.mask);
-  input.value = masked;
-  // Restore cursor position intelligently
-  const diff = masked.length - prevLen;
-  input.setSelectionRange(cursor + diff, cursor + diff);
-}
-
 function selectDdi(ddi) {
   selectedDdi = ddi;
   const flagEl = document.getElementById('phoneDdiFlag');
@@ -2261,13 +2232,7 @@ function selectDdi(ddi) {
   const dd = document.getElementById('ddiDropdown');
   if (dd) dd.classList.remove('open');
   const phoneInput = document.getElementById('phone');
-  if (phoneInput) {
-    // Build placeholder from mask: (##) #####-#### → (00) 00000-0000
-    phoneInput.placeholder = ddi.mask.replace(/#/g, '0');
-    // Clear and re-mask whatever is already typed
-    phoneInput.value = applyPhoneMask(phoneInput.value, ddi.mask);
-    phoneInput.focus();
-  }
+  if (phoneInput) { phoneInput.placeholder = ddi.mask.replace(/#/g,'0'); phoneInput.focus(); }
 }
 function toggleDdiDropdown() {
   const dd = document.getElementById('ddiDropdown');
