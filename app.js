@@ -2044,13 +2044,13 @@ ${d.langSkills.length?`<h2>Idiomas</h2><div class="tags-line">${d.langSkills.map
 :root{--c1:${c1};--c2:${c2};--c3:${c3||c1};--c4:${c4||c2};--radius:14px;--radius-lg:22px;${isDark?darkVars:lightVars}}
 [data-theme="dark"]{${darkVars}}[data-theme="light"]{${lightVars}}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
-.nav{position:sticky;top:0;z-index:100;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;backdrop-filter:blur(12px)}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 2rem;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:60px;backdrop-filter:blur(12px)}
 .nav-brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);text-decoration:none}
 .nav-brand span{color:var(--c1)}
-.nav-links{display:flex;gap:1.5rem;align-items:center;list-style:none;overflow-x:auto}
+.nav-links{display:flex;gap:1.5rem;align-items:center;list-style:none;overflow-x:auto;justify-content:center}
 .nav-link{font-size:.875rem;font-weight:500;color:var(--text-muted);text-decoration:none;transition:color .2s;white-space:nowrap;cursor:pointer;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;padding:0}
 .nav-link:hover,.nav-link.active{color:var(--c1)}
-.nav-right{display:flex;align-items:center;gap:.75rem}
+.nav-right{display:flex;align-items:center;gap:.75rem;justify-content:flex-end}
 .theme-toggle{background:var(--surface);border:1px solid var(--border);border-radius:999px;width:36px;height:36px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .lang-switcher{display:flex;gap:.35rem}
 .lang-btn{padding:.25rem .6rem;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s}
