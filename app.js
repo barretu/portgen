@@ -1853,10 +1853,10 @@ function buildPortfolioHTML(d) {
   const [c1, c2, c3, c4] = d.palette;
 
   const i18nAll = {
-    pt: { about:'Sobre mim', education:'Formação', experience:'Experiência', projects:'Projetos', skills:'Habilidades', certificates:'Certificados', contact:'Contato', downloadResume:'Baixar Currículo (PDF)', techSkills:'Habilidades Técnicas', softSkills:'Soft Skills', languages:'Idiomas', viewProject:'Ver projeto', viewRepo:'Repositório', viewCert:'Ver certificado', issuedBy:'Emitido por', toggleTheme:'Alternar tema', hello:'👋 Olá, eu sou' },
-    en: { about:'About Me', education:'Education', experience:'Experience', projects:'Projects', skills:'Skills', certificates:'Certificates', contact:'Contact', downloadResume:'Download Resume (PDF)', techSkills:'Technical Skills', softSkills:'Soft Skills', languages:'Languages', viewProject:'View Project', viewRepo:'Repository', viewCert:'View Certificate', issuedBy:'Issued by', toggleTheme:'Toggle theme', hello:'👋 Hi, I am' },
-    es: { about:'Sobre mí', education:'Formación', experience:'Experiencia', projects:'Proyectos', skills:'Habilidades', certificates:'Certificados', contact:'Contacto', downloadResume:'Descargar CV (PDF)', techSkills:'Habilidades Técnicas', softSkills:'Habilidades Blandas', languages:'Idiomas', viewProject:'Ver proyecto', viewRepo:'Repositorio', viewCert:'Ver certificado', issuedBy:'Emitido por', toggleTheme:'Cambiar tema', hello:'👋 Hola, soy' },
-    fr: { about:'À propos', education:'Formation', experience:'Expérience', projects:'Projets', skills:'Compétences', certificates:'Certifications', contact:'Contact', downloadResume:'Télécharger le CV (PDF)', techSkills:'Compétences Techniques', softSkills:'Compétences Douces', languages:'Langues', viewProject:'Voir le projet', viewRepo:'Dépôt', viewCert:'Voir la certification', issuedBy:'Délivré par', toggleTheme:'Changer de thème', hello:'👋 Bonjour, je suis' },
+    pt: { about:'Sobre mim', education:'Formação', experience:'Experiência', projects:'Projetos', skills:'Habilidades', certificates:'Certificados', contact:'Contato', downloadResume:'Baixar Currículo (PDF)', techSkills:'Habilidades Técnicas', softSkills:'Soft Skills', languages:'Idiomas', viewProject:'Ver projeto', viewRepo:'Repositório', viewCert:'Ver certificado', issuedBy:'Emitido por', toggleTheme:'Alternar tema', hello:'👋 Olá, eu sou', inProgress:'Em andamento', current:'Atual', credentialId:'ID da credencial', location:'Localização' },
+    en: { about:'About Me', education:'Education', experience:'Experience', projects:'Projects', skills:'Skills', certificates:'Certificates', contact:'Contact', downloadResume:'Download Resume (PDF)', techSkills:'Technical Skills', softSkills:'Soft Skills', languages:'Languages', viewProject:'View Project', viewRepo:'Repository', viewCert:'View Certificate', issuedBy:'Issued by', toggleTheme:'Toggle theme', hello:'👋 Hi, I am', inProgress:'In progress', current:'Present', credentialId:'Credential ID', location:'Location' },
+    es: { about:'Sobre mí', education:'Formación', experience:'Experiencia', projects:'Proyectos', skills:'Habilidades', certificates:'Certificados', contact:'Contacto', downloadResume:'Descargar CV (PDF)', techSkills:'Habilidades Técnicas', softSkills:'Habilidades Blandas', languages:'Idiomas', viewProject:'Ver proyecto', viewRepo:'Repositorio', viewCert:'Ver certificado', issuedBy:'Emitido por', toggleTheme:'Cambiar tema', hello:'👋 Hola, soy', inProgress:'En curso', current:'Actual', credentialId:'ID de credencial', location:'Ubicación' },
+    fr: { about:'À propos', education:'Formation', experience:'Expérience', projects:'Projets', skills:'Compétences', certificates:'Certifications', contact:'Contact', downloadResume:'Télécharger le CV (PDF)', techSkills:'Compétences Techniques', softSkills:'Compétences Douces', languages:'Langues', viewProject:'Voir le projet', viewRepo:'Dépôt', viewCert:'Voir la certification', issuedBy:'Délivré par', toggleTheme:'Changer de thème', hello:'👋 Bonjour, je suis', inProgress:'En cours', current:'Actuel', credentialId:'ID de certification', location:'Localisation' },
   };
 
   const primaryLang = 'pt';
@@ -1868,9 +1868,11 @@ function buildPortfolioHTML(d) {
 
   const sections = ['about','education','experience','projects','skills','certificates','contact'];
 
-  const navLinks = sections.map(s =>
-    `<a href="${isLanding ? '#' + s : '#'}" class="nav-link" data-page="${s}">${t[s] || s}</a>`
-  ).join('');
+  // Build nav links for all languages (data-label-* for JS to swap)
+  const navLinks = sections.map(s => {
+    const labels = Object.entries(i18nAll).map(([lang, tl]) => `data-label-${lang}="${tl[s]||s}"`).join(' ');
+    return `<a href="${isLanding ? '#' + s : '#'}" class="nav-link" data-page="${s}" ${labels}>${t[s] || s}</a>`;
+  }).join('');
 
   const langSwitcher = extraLangs.length > 0
     ? `<div class="lang-switcher" id="langSwitcher">
@@ -1968,11 +1970,11 @@ function buildPortfolioHTML(d) {
         ? `document.querySelectorAll('[data-lang-section]').forEach(el=>{
         el.style.display=(el.getAttribute('data-lang-section')===lang)?'':'none';
       });
-      document.querySelectorAll('.nav-link').forEach(a=>{const base=a.dataset.page;a.href='#'+(lang!=='pt'?base+'-'+lang:base);});`
+      document.querySelectorAll('.nav-link').forEach(a=>{const base=a.dataset.page;a.href='#'+(lang!=='pt'?base+'-'+lang:base);const label=a.getAttribute('data-label-'+lang)||a.getAttribute('data-label-pt')||base;a.textContent=label;});const ey=document.getElementById('heroEyebrow');if(ey){const lb=ey.getAttribute('data-label-'+lang)||ey.getAttribute('data-label-pt');if(lb)ey.textContent=lb;}const dlb=document.querySelector('.resume-btn');const dlm={pt:'Baixar Currículo (PDF)',en:'Download Resume (PDF)',es:'Descargar CV (PDF)',fr:'Télécharger le CV (PDF)'};if(dlb&&dlm[lang])dlb.textContent=dlm[lang];`
         : `const activePage=document.querySelector('.page[style*="block"]');
       const activeId=activePage?activePage.id.replace(/^page-/,'').replace(/-[a-z]{2}$/,''):'about';
       document.querySelectorAll('.page').forEach(el=>el.style.display='none');
-      showPage(activeId,lang);`
+      showPage(activeId,lang);document.querySelectorAll('.nav-link').forEach(a=>{const label=a.getAttribute('data-label-'+lang)||a.getAttribute('data-label-pt')||a.dataset.page;a.textContent=label;});const ey2=document.getElementById('heroEyebrow');if(ey2){const lb2=ey2.getAttribute('data-label-'+lang)||ey2.getAttribute('data-label-pt');if(lb2)ey2.textContent=lb2;}const dlb2=document.querySelector('.resume-btn');const dlm2={pt:'Baixar Currículo (PDF)',en:'Download Resume (PDF)',es:'Descargar CV (PDF)',fr:'Télécharger le CV (PDF)'};if(dlb2&&dlm2[lang])dlb2.textContent=dlm2[lang];`
       }
     }
   ` : `let currentLang='pt';`;
@@ -2169,7 +2171,7 @@ footer{text-align:center;padding:2rem;color:var(--text-muted);font-size:.8rem;bo
 </nav>
 <div class="hero">
   <div class="hero-text">
-    <div class="hero-eyebrow">${t.hello}</div>
+    <div class="hero-eyebrow" id="heroEyebrow" ${Object.entries(i18nAll).map(([lang,tl])=>`data-label-${lang}="${tl.hello}"`).join(' ')}>${t.hello}</div>
     <h1 class="hero-name">${d.fullName.split(' ').map((w,i)=>i===0?`<em>${w}</em>`:w).join(' ')}</h1>
     <p class="hero-title">${d.jobTitle}</p>
     <div class="hero-ctas">
