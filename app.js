@@ -2114,7 +2114,7 @@ ${d.photo?`.hero-photo-wrap{position:relative}.hero-photo{width:220px;height:220
 .cert-date{font-size:.8rem;color:var(--c1);margin:.25rem 0}
 .cert-credential{font-size:.75rem;color:var(--text-muted);margin:.15rem 0;font-family:monospace;letter-spacing:.03em}.cert-link{font-size:.8rem;color:var(--c1);text-decoration:none;font-weight:500}
 .contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
-.contact-card{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--text);font-size:.9rem;font-weight:500;transition:all .2s}
+.contact-card{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--text);font-size:.9rem;font-weight:500;transition:all .2s;overflow:hidden;min-width:0}.contact-card span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .contact-card:hover{border-color:var(--c1);transform:translateY(-2px)}
 .contact-icon{width:36px;height:36px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;flex-shrink:0}
 .contact-li-icon{background:#0a66c2;color:#fff;font-size:.75rem;font-weight:700}
