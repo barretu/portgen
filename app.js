@@ -74,7 +74,7 @@ const TOOL_I18N = {
     cert_name: 'Nome do certificado', cert_name_ph: 'Ex: Fundamentos de Cloud Computing',
     cert_issuer: 'Emissor', cert_issuer_ph: 'Ex: AWS, Google, Coursera',
     cert_date: 'Data', cert_date_ph: 'Ex: Jun 2024',
-    cert_link: 'Link', add_cert: '+ Adicionar certificado',
+    cert_link: 'Link', add_cert: '+ Adicionar certificado', cert_credential: 'Código da credencial',
     // Extra links
     behance_ph: 'https://behance.net/seuperfil', dribbble_ph: 'https://dribbble.com/seuperfil',
     youtube_ph: 'https://youtube.com/@seucanal', extra_link_ph: 'https://...',
@@ -177,7 +177,7 @@ const TOOL_I18N = {
     cert_name: 'Certificate name', cert_name_ph: 'e.g. Cloud Computing Fundamentals',
     cert_issuer: 'Issuer', cert_issuer_ph: 'e.g. AWS, Google, Coursera',
     cert_date: 'Date', cert_date_ph: 'e.g. Jun 2024',
-    cert_link: 'Link', add_cert: '+ Add certificate',
+    cert_link: 'Link', add_cert: '+ Add certificate', cert_credential: 'Credential ID',
     behance_ph: 'https://behance.net/yourprofile', dribbble_ph: 'https://dribbble.com/yourprofile',
     youtube_ph: 'https://youtube.com/@yourchannel', extra_link_ph: 'https://...',
     extra_label_ph: 'Link label (e.g. Kaggle, Medium, Dev.to...)',
@@ -273,7 +273,7 @@ const TOOL_I18N = {
     cert_name: 'Nombre del certificado', cert_name_ph: 'Ej: Fundamentos de Cloud Computing',
     cert_issuer: 'Emisor', cert_issuer_ph: 'Ej: AWS, Google, Coursera',
     cert_date: 'Fecha', cert_date_ph: 'Ej: Jun 2024',
-    cert_link: 'Enlace', add_cert: '+ Agregar certificado',
+    cert_link: 'Enlace', add_cert: '+ Agregar certificado', cert_credential: 'ID de credencial',
     behance_ph: 'https://behance.net/tuperfil', dribbble_ph: 'https://dribbble.com/tuperfil',
     youtube_ph: 'https://youtube.com/@tucanal', extra_link_ph: 'https://...',
     extra_label_ph: 'Etiqueta del enlace (Ej: Kaggle, Medium...)',
@@ -369,7 +369,7 @@ const TOOL_I18N = {
     cert_name: 'Nom de la certification', cert_name_ph: 'Ex : Fondamentaux du Cloud Computing',
     cert_issuer: 'Émetteur', cert_issuer_ph: 'Ex : AWS, Google, Coursera',
     cert_date: 'Date', cert_date_ph: 'Ex : Juin 2024',
-    cert_link: 'Lien', add_cert: '+ Ajouter une certification',
+    cert_link: 'Lien', add_cert: '+ Ajouter une certification', cert_credential: 'ID de certification',
     behance_ph: 'https://behance.net/votreprofil', dribbble_ph: 'https://dribbble.com/votreprofil',
     youtube_ph: 'https://youtube.com/@votrechaine', extra_link_ph: 'https://...',
     extra_label_ph: 'Libellé du lien (Ex : Kaggle, Medium...)',
@@ -625,12 +625,20 @@ function loadDraft() {
   }
 }
 
+const DRAFT_I18N = {
+  pt: { restored: '📋 Rascunho restaurado automaticamente.', clear: 'Limpar rascunho' },
+  en: { restored: '📋 Draft restored automatically.',        clear: 'Clear draft'     },
+  es: { restored: '📋 Borrador restaurado automáticamente.', clear: 'Borrar borrador' },
+  fr: { restored: '📋 Brouillon restauré automatiquement.',  clear: 'Effacer le brouillon' },
+};
+
 function showDraftBanner() {
   if (document.getElementById('draftBanner')) return;
+  const di = DRAFT_I18N[toolLang] || DRAFT_I18N.pt;
   const banner = document.createElement('div');
   banner.id = 'draftBanner';
   banner.className = 'draft-banner';
-  banner.innerHTML = `<span>📋 Rascunho restaurado automaticamente.</span><button onclick="clearDraft()" class="draft-clear-btn">Limpar rascunho</button>`;
+  banner.innerHTML = `<span>${di.restored}</span><button onclick="clearDraft()" class="draft-clear-btn">${di.clear}</button>`;
   const main = document.querySelector('.main');
   if (main) main.prepend(banner);
 }
@@ -947,10 +955,20 @@ function setBtn(dataValue, text) {
   if (btn) btn.textContent = text;
 }
 
-// Refresh dynamic card placeholders (new cards will already use T)
+// Refresh dynamic card labels when language changes
 function refreshCardLabels() {
-  // nothing needed for existing cards as placeholders are set at creation time
-  // Future cards will use current T
+  document.querySelectorAll('#certList .repeater-card').forEach(card => {
+    const credEl = card.querySelector('[data-field="credentialId"]');
+    if (!credEl) return;
+    const lbl = credEl.closest('.field')?.querySelector('label');
+    if (lbl) {
+      lbl.textContent = T.cert_credential + ' ';
+      const badge = document.createElement('span');
+      badge.className = 'optional-badge';
+      badge.textContent = T.optional;
+      lbl.appendChild(badge);
+    }
+  });
 }
 
 // ════════════════════════════════════════════════════════
@@ -994,6 +1012,34 @@ let currentStep = 1;
 
 function goStep(n) {
   const prev = currentStep;
+
+  // Validação dos campos obrigatórios ao sair do step 2
+  if (prev === 2 && n > prev) {
+    const required = [
+      { id: 'fullName',      key: 'fullname'  },
+      { id: 'jobTitle',      key: 'jobtitle'  },
+      { id: 'email',         key: 'email'     },
+      { id: 'linkedin',      key: 'linkedin'  },
+      { id: 'locationInput', key: 'location'  },
+    ];
+    for (const { id, key } of required) {
+      const el = document.getElementById(id);
+      if (!el || !el.value.trim()) {
+        if (el) el.focus();
+        const msgs = { pt: 'é obrigatório', en: 'is required', es: 'es obligatorio', fr: 'est obligatoire' };
+        showToast(`⚠️ ${T[key] || id} ${msgs[toolLang] || msgs.pt}`, 'error', 3000);
+        return;
+      }
+    }
+    const emailEl = document.getElementById('email');
+    if (emailEl && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())) {
+      emailEl.focus();
+      const msgs = { pt: 'E-mail inválido', en: 'Invalid email', es: 'Correo inválido', fr: 'Email invalide' };
+      showToast(`⚠️ ${msgs[toolLang] || msgs.pt}`, 'error', 3000);
+      return;
+    }
+  }
+
   const current = document.querySelector(`.step[data-step="${prev}"]`);
   const next    = document.querySelector(`.step[data-step="${n}"]`);
   if (!next) return;
@@ -1215,7 +1261,9 @@ function getCardPeriod(card) {
   const currentCb= card.querySelector('[data-field="periodCurrent"]');
   if (!startSel) return card.querySelector('[data-field="period"]')?.value || '';
   const start = startSel.value || '';
-  const end   = currentCb?.checked ? 'Atual' : (endSel?.value || '');
+  const currentWords = { pt: 'Atual', en: 'Present', es: 'Actual', fr: 'Actuel' };
+  const currentLabel = currentWords[toolLang] || 'Atual';
+  const end   = currentCb?.checked ? currentLabel : (endSel?.value || '');
   return start && end ? `${start} – ${end}` : start || end;
 }
 
@@ -1382,7 +1430,7 @@ function certCard(id) {
     </div>
     <div class="row-2">
       <div class="field"><label>${T.cert_date}</label><input type="text" placeholder="${T.cert_date_ph}" data-field="date" /></div>
-      <div class="field"><label>Código da credencial <span class="optional-badge">${T.optional}</span></label><input type="text" placeholder="Ex: ABC123XYZ" data-field="credentialId" /></div>
+      <div class="field"><label>${T.cert_credential} <span class="optional-badge">${T.optional}</span></label><input type="text" placeholder="Ex: ABC123XYZ" data-field="credentialId" /></div>
     </div>
     <div class="field"><label>${T.cert_link} <span class="optional-badge">${T.optional}</span></label><input type="url" placeholder="https://..." data-field="link" /></div>
   </div>`;
@@ -1595,8 +1643,12 @@ function renderTags(containerId) {
   tagStores[containerId].forEach(tag => {
     const el = document.createElement('div');
     el.className = 'tag';
-    const safe = tag.replace(/'/g, "\\'");
-    el.innerHTML = `${escapeHtml(tag)}<button type="button" onclick="removeTag('${containerId}','${safe}')">✕</button>`;
+    el.appendChild(document.createTextNode(escapeHtml(tag)));
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '✕';
+    btn.addEventListener('click', () => removeTag(containerId, tag));
+    el.appendChild(btn);
     wrap.appendChild(el);
   });
   wrap.appendChild(input);
@@ -2018,12 +2070,12 @@ h2{font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:.1em;b
   <div class="resume-name">${d.fullName}</div>
   <div class="resume-title">${d.jobTitle}</div>
   <div class="resume-contacts">
-    ${d.email?`<span>✉ <a href="mailto:${d.email}">${d.email}</a></span>`:''}
-    ${d.phone?`<span>📞 ${d.phone}</span>`:''}
-    ${d.location?`<span>📍 ${d.location}</span>`:''}
-    ${d.linkedin?`<span>🔗 <a href="${d.linkedin}">${d.linkedin}</a></span>`:''}
-    ${d.github?`<span>⌥ <a href="${d.github}">${d.github}</a></span>`:''}
-    ${d.website?`<span>🌐 <a href="${d.website}">${d.website}</a></span>`:''}
+    ${d.email?`<a href="mailto:${d.email}">${d.email}</a></span>`:''}
+    ${d.phone?`${d.phone}</span>`:''}
+    ${d.location?`${d.location}</span>`:''}
+    ${d.linkedin?`<a href="${d.linkedin}">${d.linkedin}</a></span>`:''}
+    ${d.github?`<a href="${d.github}">${d.github}</a></span>`:''}
+    ${d.website?`<a href="${d.website}">${d.website}</a></span>`:''}
   </div>
 </div>
 ${d.about?`<h2>Resumo Profissional</h2><p class="about-text">${d.about}</p>`:''}
@@ -2250,6 +2302,28 @@ function filterDdi(query) {
   const q = query.toLowerCase();
   renderDdiList(DDI_LIST.filter(d => d.name.toLowerCase().includes(q) || d.code.includes(q)));
 }
+
+// Aplica a máscara do país ao número digitado
+function applyPhoneMask(value, mask) {
+  const digits = value.replace(/\D/g, '');
+  let result = '';
+  let di = 0;
+  for (let i = 0; i < mask.length && di < digits.length; i++) {
+    if (mask[i] === '#') {
+      result += digits[di++];
+    } else {
+      result += mask[i];
+    }
+  }
+  return result;
+}
+
+// Formata o campo enquanto o usuário digita
+function onPhoneInput(e) {
+  if (!selectedDdi || !selectedDdi.mask) return;
+  e.target.value = applyPhoneMask(e.target.value, selectedDdi.mask);
+}
+
 function selectDdi(ddi) {
   selectedDdi = ddi;
   const flagEl = document.getElementById('phoneDdiFlag');
@@ -2259,7 +2333,12 @@ function selectDdi(ddi) {
   const dd = document.getElementById('ddiDropdown');
   if (dd) dd.classList.remove('open');
   const phoneInput = document.getElementById('phone');
-  if (phoneInput) { phoneInput.placeholder = ddi.mask.replace(/#/g,'0'); phoneInput.focus(); }
+  if (phoneInput) {
+    phoneInput.placeholder = ddi.mask.replace(/#/g, '0');
+    // Re-aplica máscara ao número já digitado quando o país muda
+    phoneInput.value = applyPhoneMask(phoneInput.value, ddi.mask);
+    phoneInput.focus();
+  }
 }
 function toggleDdiDropdown() {
   const dd = document.getElementById('ddiDropdown');
@@ -2433,8 +2512,12 @@ function renderLangTags() {
   tagStores.langTags.forEach(tag => {
     const el = document.createElement('div');
     el.className = 'tag';
-    const safe = tag.replace(/'/g, "\\'");
-    el.innerHTML = `${escapeHtml(tag)}<button type="button" onclick="removeLangTag('${safe}')">✕</button>`;
+    el.appendChild(document.createTextNode(escapeHtml(tag)));
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '✕';
+    btn.addEventListener('click', () => removeLangTag(tag));
+    el.appendChild(btn);
     wrap.appendChild(el);
   });
 }
@@ -2507,8 +2590,12 @@ function renderProjTechTags(cardId) {
   (projTechStores[cardId] || []).forEach(tag => {
     const el = document.createElement('div');
     el.className = 'tag';
-    const safe = tag.replace(/'/g, "\\'");
-    el.innerHTML = `${escapeHtml(tag)}<button type="button" onclick="removeProjTechTag('${safe}',${cardId})">✕</button>`;
+    el.appendChild(document.createTextNode(escapeHtml(tag)));
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '✕';
+    btn.addEventListener('click', () => removeProjTechTag(tag, cardId));
+    el.appendChild(btn);
     wrap.appendChild(el);
   });
   if (input) wrap.appendChild(input);
